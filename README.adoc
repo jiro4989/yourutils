@@ -5,6 +5,8 @@
 
 clitools is a commands.
 
+**Developing now**
+
 == Development
 
 nim -v
