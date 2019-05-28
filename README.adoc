@@ -115,7 +115,7 @@ $ balloon -t:shout HELLO
 TODO
 ----
 
-== colful
+=== colful
 
 [source,bash]
 ----
@@ -135,7 +135,7 @@ $ colful -p:255 -c:16
 $ colful -p:RGB --oneline
 ----
 
-== ucut
+=== ucut
 
 [source,bash]
 ----
@@ -146,13 +146,13 @@ $ echo A123B | ucut -d '\d+' -f 1,2
 A B
 ----
 
-== align
+=== align
 
 [source,bash]
 ----
 ----
 
-== aggr
+=== aggr
 
 [source,bash]
 ----
