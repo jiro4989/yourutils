@@ -8,7 +8,7 @@ os:
 
 env:
   - PATH=$HOME/.nimble/bin:$PATH
-    APP_NAME=rect
+    APP_NAME=clitools
 
 addons:
   apt:

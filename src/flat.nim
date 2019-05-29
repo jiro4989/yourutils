@@ -11,6 +11,21 @@ type
 
 const
   appName = "flat"
+  version = "v1.0.0"
+  doc = &"""
+{appName} flats lines to lines.
+
+Usage:
+    {appName} tmp.txt
+    seq 5 | {appName}
+
+Options:
+    -h, --help                Print this help
+    -v, --version             Print version
+    -X, --debug               Print debug log
+    -n, --columncount:int     Count
+    -d, --delimiter:string    Delimiter
+"""
 
 var
   useDebug: bool
@@ -42,11 +57,19 @@ when isMainModule:
         opts.args.add val
       of cmdLongOption, cmdShortOption:
         case key
+        of "help", "h":
+          echo doc
+          quit 0
+        of "version", "v":
+          echo version
+          quit 0
+        of "debug", "X":
+          useDebug = true
         of "column-count", "n":
           opts.columnCount = val.parseInt
           doAssert 0 < opts.columnCount, &"{appName}: {key} = {opts.columnCount}: parameters is illegal"
-        of "delimiter", "d": opts.delimiter = val
-        of "debug", "X": useDebug = true
+        of "delimiter", "d":
+          opts.delimiter = val
       of cmdEnd:
         assert(false)  # cannot happen
 
