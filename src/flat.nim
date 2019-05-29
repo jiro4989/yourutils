@@ -7,7 +7,6 @@ type
   Options* = ref object
     columnCount*: int
     delimiter*: string
-    args*: seq[string]
 
 const
   appName = "flat"
@@ -47,6 +46,7 @@ when isMainModule:
   var
     optParser = initOptParser()
     opts = new Options
+    args: seq[string]
   opts.columnCount = 0
   opts.delimiter = " "
 
@@ -54,7 +54,7 @@ when isMainModule:
   for kind, key, val in optParser.getopt():
       case kind
       of cmdArgument:
-        opts.args.add val
+        args.add val
       of cmdLongOption, cmdShortOption:
         case key
         of "help", "h":
@@ -82,12 +82,12 @@ when isMainModule:
   
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
   var lines: seq[string]
-  if opts.args.len < 1:
+  if args.len < 1:
     debug appName, ": read stdin"
     lines = stdin.readLines
   else:
     debug appName, ": read args files"
-    for arg in opts.args:
+    for arg in args:
       var f = open(arg)
       lines.add f.readLines
       f.close
