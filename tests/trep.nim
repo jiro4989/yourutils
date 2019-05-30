@@ -1,5 +1,5 @@
 import unittest
-import repeat
+import rep
 import strutils
 
 doAssert "a".repeat(3) == "aaa"
