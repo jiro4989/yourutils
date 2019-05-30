@@ -1,13 +1,15 @@
 import clitools/io
-import parseopt, logging
+import parseopt, logging, unicode
 from strutils import parseInt, join, repeat
 from strformat import `&`
 from sequtils import mapIt
+from os import commandLineParams
 
 type
   Options* = ref object
     format*: string
     delimiter*: string
+    useStdin*: bool
 
 const
   appName = "repeat"
@@ -16,26 +18,39 @@ const
 {appName} repeats a word
 
 Usage:
-    {appName} count word
-    echo word | {appName} count
+    {appName} [options] (count...) [word]
+
+Examples:
+    {appName} 5 A
+    {appName} 3 5 A
+    echo word | {appName} 2 3 -i
 
 Options:
-    -h, --help             Print this help
-    -v, --version          Print version
-    -X, --debug            Print debug log
-    -f, --format:string    Format
+    -h, --help                Print this help
+    -v, --version             Print version
+    -X, --debug               Print debug log
+    -f, --format:string       Format
+    -d, --delimiter:string    Delimiter
+    -i, --stdin               Use stdin
 """
 
 var
   useDebug: bool
 
 proc repeatString*(word: string, repeatCounts: openArray[int], opts: Options): seq[string] =
+  if repeatCounts.len < 1: return
   for cnt in repeatCounts:
-    result.add word.repeat(cnt).mapIt(it).join(opts.delimiter)
+    if cnt < 1: continue
+    var s: seq[string]
+    for i in 1..cnt:
+      s.add word
+      s.add opts.delimiter
+    s = s[0..^2]
+    result.add s.join
 
-when isMainModule:
+proc main*(params: seq[string]): seq[string] =
   var
-    optParser = initOptParser()
+    optParser = initOptParser(params)
     opts = new Options
     args: seq[string]
   opts.format = "%s"
@@ -44,19 +59,19 @@ when isMainModule:
   for kind, key, val in optParser.getopt():
     case kind
     of cmdArgument:
-      args.add val
+      args.add key
     of cmdLongOption, cmdShortOption:
       case key
       of "help", "h":
         echo doc
-        quit 0
+        return
       of "version", "v":
         echo version
-        quit 0
-      of "debug", "X":
-        useDebug = true
-      of "format", "f":
-        opts.format = val
+        return
+      of "debug", "X": useDebug = true
+      of "format", "f": opts.format = val
+      of "delimiter", "d": opts.delimiter = val
+      of "stdin", "i": opts.useStdin = true
     of cmdEnd:
       assert(false)  # cannot happen
 
@@ -69,12 +84,18 @@ when isMainModule:
 
   doAssert 0 < args.len, &"{appName}: must count of arguments is over 0"
 
-  var repeatCounts: seq[int]
-  if args.len <= 1:
-    repeatCounts.add args[0].parseInt
+  var
+    repeatCounts: seq[int]
+    word: string
+  if opts.useStdin:
+    repeatCounts.add args.mapIt(it.parseInt)
+    word = stdin.readLines.join
   else:
     repeatCounts = args[0..^2].mapIt(it.parseInt)
+    word = args[args.len-1]
 
-  let word = args[args.len-1]
-  for line in word.repeatString(repeatCounts, opts):
+  result = word.repeatString(repeatCounts, opts)
+
+when isMainModule:
+  for line in main(commandLineParams()):
     echo line
