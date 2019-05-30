@@ -1,4 +1,4 @@
-import clitools/io
+import clitools/[io, log]
 import parseopt, logging, unicode
 from strutils import parseInt, join, repeat
 from strformat import `&`
@@ -7,9 +7,12 @@ from os import commandLineParams
 
 type
   Options* = ref object
+    help*: bool
+    version*: bool
     format*: string
     delimiter*: string
     useStdin*: bool
+    args*: seq[string]
 
 const
   appName = "repeat"
@@ -37,7 +40,35 @@ Options:
 var
   useDebug: bool
 
+proc getCmdOpts*(params: seq[string]): Options =
+  new result
+  var optParser = initOptParser(params)
+
+  # コマンドラインオプションを取得
+  for kind, key, val in optParser.getopt():
+    case kind
+    of cmdArgument:
+      result.args.add key
+    of cmdLongOption, cmdShortOption:
+      case key
+      of "help", "h":
+        echo doc
+        result.help = true
+        return
+      of "version", "v":
+        echo version
+        result.version = true
+        return
+      of "debug", "X": useDebug = true
+      of "format", "f": result.format = val
+      of "delimiter", "d": result.delimiter = val
+      of "stdin", "i": result.useStdin = true
+    of cmdEnd:
+      assert(false)  # cannot happen
+
+
 proc repeatString*(word: string, repeatCounts: openArray[int], opts: Options): seq[string] =
+  debug &"{appName}: word = {word}, repeatCounts = {repeatCounts}, opts = {opts[]}"
   if repeatCounts.len < 1: return
   for cnt in repeatCounts:
     if cnt < 1: continue
@@ -49,50 +80,23 @@ proc repeatString*(word: string, repeatCounts: openArray[int], opts: Options): s
     result.add s.join
 
 proc main*(params: seq[string]): seq[string] =
-  var
-    optParser = initOptParser(params)
-    opts = new Options
-    args: seq[string]
-  opts.format = "%s"
+  let opts = getCmdOpts(params)
+  if opts.help or opts.version: return
 
-  # コマンドラインオプションを取得
-  for kind, key, val in optParser.getopt():
-    case kind
-    of cmdArgument:
-      args.add key
-    of cmdLongOption, cmdShortOption:
-      case key
-      of "help", "h":
-        echo doc
-        return
-      of "version", "v":
-        echo version
-        return
-      of "debug", "X": useDebug = true
-      of "format", "f": opts.format = val
-      of "delimiter", "d": opts.delimiter = val
-      of "stdin", "i": opts.useStdin = true
-    of cmdEnd:
-      assert(false)  # cannot happen
-
-  # デバッグログを標準出力にだすか否か
-  if useDebug:
-    var logger = newConsoleLogger(lvlAll, verboseFmtStr)
-    addHandler logger
-  
+  setDebugLogger useDebug
   debug appName, ": options = ", opts[]
 
-  doAssert 0 < args.len, &"{appName}: must count of arguments is over 0"
+  doAssert 0 < opts.args.len, &"{appName}: must count of arguments is over 0"
 
   var
     repeatCounts: seq[int]
     word: string
   if opts.useStdin:
-    repeatCounts.add args.mapIt(it.parseInt)
+    repeatCounts.add opts.args.mapIt(it.parseInt)
     word = stdin.readLines.join
   else:
-    repeatCounts = args[0..^2].mapIt(it.parseInt)
-    word = args[args.len-1]
+    repeatCounts = opts.args[0..^2].mapIt(it.parseInt)
+    word = opts.args[opts.args.len-1]
 
   result = word.repeatString(repeatCounts, opts)
 

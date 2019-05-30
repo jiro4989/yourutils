@@ -163,6 +163,8 @@ A B
 == Install
 
 [source,bash]
+git clone https://github.com/jiro4989/clitools
+cd clitools
 nimble install clitools
 
 or
