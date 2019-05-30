@@ -56,7 +56,7 @@ when isMainModule:
   for kind, key, val in optParser.getopt():
     case kind
     of cmdArgument:
-      opts.subcmd = val
+      opts.subcmd = key
       case opts.subcmd
       of "left", "center", "right": discard
       else: assert false, "Illegal subcommand: cmd = " & opts.subcmd
@@ -78,7 +78,7 @@ when isMainModule:
   for kind, key, val in optParser.getopt():
     case kind
     of cmdArgument:
-      args.add val
+      args.add key
     of cmdLongOption, cmdShortOption:
       case key
       of "help", "h":

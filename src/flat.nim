@@ -43,7 +43,7 @@ proc getCmdOpts*(params: seq[string]): Options =
   for kind, key, val in optParser.getopt():
       case kind
       of cmdArgument:
-        result.args.add val
+        result.args.add key
       of cmdLongOption, cmdShortOption:
         case key
         of "help", "h":
