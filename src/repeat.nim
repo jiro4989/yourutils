@@ -75,4 +75,6 @@ when isMainModule:
   else:
     repeatCounts = args[0..^2].mapIt(it.parseInt)
 
-  var word = args[args.len-1]
+  let word = args[args.len-1]
+  for line in word.repeatString(repeatCounts, opts):
+    echo line
