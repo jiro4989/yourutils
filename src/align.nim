@@ -1,15 +1,19 @@
-import clitools/io
+import clitools/[io, log]
 import alignment
 import parseopt, logging
 from strutils import parseInt
 from strformat import `&`
+from os import commandLineParams
 
 type
   Options* = ref object
+    help*: bool
+    version*: bool
     subcmd*: string
     length*: int
     pad*: string
     writeFile*: bool
+    args*: seq[string]
 
 const
   appName = "align"
@@ -35,6 +39,44 @@ Options:
 var
   useDebug: bool
 
+proc getCmdOpts*(params: seq[string]): Options =
+  var optParser = initOptParser()
+  new result
+  result.pad = " "
+
+  # コマンドラインオプションを取得
+  for kind, key, val in optParser.getopt():
+    case kind
+    of cmdArgument:
+      if result.subcmd == "":
+        case key
+        of "left", "center", "right":
+          result.subcmd = key
+      else:
+        result.args.add key
+    of cmdLongOption, cmdShortOption:
+      case key
+      of "help", "h":
+        echo doc
+        result.help = true
+        return
+      of "version", "v":
+        echo version
+        result.version = true
+        return
+      of "debug", "X":
+        useDebug = true
+      of "length", "n":
+        result.length = val.parseInt
+        doAssert 0 < result.length, &"{appName}: {key} = {result.length}: parameters is illegal"
+      of "pad", "p":
+        result.pad = val
+      of "writeFile", "w":
+        result.writeFile = true
+    of cmdEnd:
+      assert(false)  # cannot happen
+
+
 proc execSubcmd(f: File, lines: openArray[string], opts: Options) =
   case opts.subcmd
   of "left":
@@ -46,68 +88,14 @@ proc execSubcmd(f: File, lines: openArray[string], opts: Options) =
   else: discard # 到達しない
 
 when isMainModule:
-  var
-    optParser = initOptParser()
-    opts = new Options
-    args: seq[string]
-  opts.pad = " "
+  let opts = getCmdOpts(commandLineParams())
 
-  # まず先頭の引数を1つだけ調べる
-  for kind, key, val in optParser.getopt():
-    case kind
-    of cmdArgument:
-      opts.subcmd = key
-      case opts.subcmd
-      of "left", "center", "right": discard
-      else: assert false, "Illegal subcommand: cmd = " & opts.subcmd
-    of cmdLongOption, cmdShortOption:
-      case key
-      of "help", "h":
-        echo doc
-        quit 0
-      of "version", "v":
-        echo version
-        quit 0
-      else:
-        assert false, "Illegal option: key = " & key
-    of cmdEnd:
-      assert(false)  # cannot happen
-    break
-
-  # コマンドラインオプションを取得
-  for kind, key, val in optParser.getopt():
-    case kind
-    of cmdArgument:
-      args.add key
-    of cmdLongOption, cmdShortOption:
-      case key
-      of "help", "h":
-        echo doc
-        quit 0
-      of "version", "v":
-        echo version
-        quit 0
-      of "debug", "X":
-        useDebug = true
-      of "length", "n":
-        opts.length = val.parseInt
-        doAssert 0 < opts.length, &"{appName}: {key} = {opts.length}: parameters is illegal"
-      of "pad", "p":
-        opts.pad = val
-      of "writeFile", "w":
-        opts.writeFile = true
-    of cmdEnd:
-      assert(false)  # cannot happen
-
-  # デバッグログを標準出力にだすか否か
-  if useDebug:
-    var logger = newConsoleLogger(lvlAll, verboseFmtStr)
-    addHandler logger
+  setDebugLogger useDebug
   
   debug appName, ": options = ", opts[]
   
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
-  if args.len < 1:
+  if opts.args.len < 1:
     debug appName, ": read stdin"
     let lines = stdin.readLines
     execSubcmd stdout, lines, opts
@@ -115,7 +103,7 @@ when isMainModule:
 
   # 引数があればファイルの中身を読み取って処理する
   debug appName, ": read args files"
-  for arg in args:
+  for arg in opts.args:
     var
       f = open(arg, fmReadWrite)
       outf = if opts.writeFile: f
