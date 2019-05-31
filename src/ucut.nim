@@ -84,6 +84,7 @@ proc cut*(lines: openArray[string], opts: Options): seq[string] =
 
 proc main*(params: seq[string]): seq[string] =
   let opts = getCmdOpts(params)
+  if opts.help or opts.version: return
 
   setDebugLogger useDebug
   
