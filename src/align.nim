@@ -78,14 +78,18 @@ proc getCmdOpts*(params: seq[string]): Options =
 
 
 proc execSubcmd(f: File, lines: openArray[string], opts: Options) =
+  var aligned: seq[string]
   case opts.subcmd
   of "left":
-    f.writeLine lines.alignLeft(pad = opts.pad)
+    aligned = lines.alignLeft(pad = opts.pad)
   of "center":
-    f.writeLine lines.alignCenter(pad = opts.pad)
+    aligned = lines.alignCenter(pad = opts.pad)
   of "right":
-    f.writeLine lines.alignRight(pad = opts.pad)
+    aligned = lines.alignRight(pad = opts.pad)
   else: discard # 到達しない
+
+  for line in aligned:
+    f.writeLine line
 
 when isMainModule:
   let opts = getCmdOpts(commandLineParams())
@@ -104,10 +108,11 @@ when isMainModule:
   # 引数があればファイルの中身を読み取って処理する
   debug appName, ": read args files"
   for arg in opts.args:
-    var
-      f = open(arg, fmReadWrite)
-      outf = if opts.writeFile: f
-             else: stdout
+    var f = open(arg)
     let lines = f.readLines
-    execSubcmd outf, lines, opts
     f.close
+
+    var outf = if opts.writeFile: open(arg, fmWrite)
+               else: stdout
+    execSubcmd outf, lines, opts
+    outf.close
