@@ -6,7 +6,7 @@ description   = "clitools is cli commands."
 license       = "MIT"
 srcDir        = "src"
 binDir        = "bin"
-bin           = @["flat", "rep", "align"]
+bin           = @["flat", "rep", "align", "ucut"]
 
 
 # Dependencies
