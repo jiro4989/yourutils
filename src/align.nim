@@ -1,8 +1,9 @@
 import clitools/[io, log]
 import alignment
 import parseopt, logging
-from strutils import parseInt
+from strutils import parseInt, join
 from strformat import `&`
+from sequtils import mapIt, repeat
 from os import commandLineParams
 
 type
@@ -78,14 +79,18 @@ proc getCmdOpts*(params: seq[string]): Options =
 
 
 proc execSubcmd(f: File, lines: openArray[string], opts: Options) =
+  let
+    n = opts.length
+    p = opts.pad
   var aligned: seq[string]
   case opts.subcmd
   of "left":
-    aligned = lines.alignLeft(pad = opts.pad)
+    aligned = lines.alignLeft(pad = opts.pad).mapIt(it & p.repeat(n).join)
   of "center":
-    aligned = lines.alignCenter(pad = opts.pad)
+    var m = int(n / 2)
+    aligned = lines.alignCenter(pad = opts.pad).mapIt(p.repeat(m).join & it & p.repeat(m).join)
   of "right":
-    aligned = lines.alignRight(pad = opts.pad)
+    aligned = lines.alignRight(pad = opts.pad).mapIt(p.repeat(n).join & it)
   else: discard # 到達しない
 
   for line in aligned:
