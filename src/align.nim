@@ -41,7 +41,7 @@ var
   useDebug: bool
 
 proc getCmdOpts*(params: seq[string]): Options =
-  var optParser = initOptParser()
+  var optParser = initOptParser(params)
   new result
   result.pad = " "
 
