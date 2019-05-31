@@ -42,6 +42,7 @@ proc getCmdOpts*(params: seq[string]): Options =
   new result
   result.delimiter = " "
   result.outputDelimiter = " "
+  result.fields.add 1
 
   # コマンドラインオプションを取得
   for kind, key, val in optParser.getopt():
@@ -102,3 +103,7 @@ proc main*(params: seq[string]): seq[string] =
     let lines = f.readLines
     result.add lines.cut(opts)
     f.close
+
+when isMainModule:
+  for line in main(commandLineParams()):
+    echo line
