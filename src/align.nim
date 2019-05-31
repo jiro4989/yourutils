@@ -98,6 +98,7 @@ proc execSubcmd(f: File, lines: openArray[string], opts: Options) =
 
 when isMainModule:
   let opts = getCmdOpts(commandLineParams())
+  if opts.help or opts.version: quit 0
 
   setDebugLogger useDebug
   
