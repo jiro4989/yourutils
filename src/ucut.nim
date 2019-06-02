@@ -72,39 +72,33 @@ proc getCmdOpts*(params: seq[string]): Options =
       assert(false)  # cannot happen
 
 
-proc cut*(lines: openArray[string], opts: Options): seq[string] =
-  for line in lines:
-    let fields = line.split(opts.delimiter)
-    var outf: seq[string]
-    for i in opts.fields:
-      let n = i - 1
-      if n < 0 or fields.len <= n: continue
-      outf.add fields[n]
-    result.add outf.join(opts.outputDelimiter)
+proc cut*(line: string, opts: Options): string =
+  let fields = line.split(opts.delimiter)
+  var outf: seq[string]
+  for i in opts.fields:
+    let n = i - 1
+    if n < 0 or fields.len <= n: continue
+    outf.add fields[n]
+  result = outf.join(opts.outputDelimiter)
 
-proc main*(params: seq[string]): seq[string] =
+proc main*(params: seq[string]) =
   let opts = getCmdOpts(params)
   if opts.help or opts.version: return
 
   setDebugLogger useDebug
-  
   debug appName, ": options = ", opts[]
   
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
   if opts.args.len < 1:
     debug appName, ": read stdin"
-    let lines = stdin.readLines
-    result = lines.cut(opts)
-    return
+    for line in stdin.lines:
+      echo line.cut(opts)
 
   # 引数があればファイルの中身を読み取って処理する
   debug appName, ": read args files"
   for arg in opts.args:
-    var f = open(arg)
-    let lines = f.readLines
-    result.add lines.cut(opts)
-    f.close
+    for line in arg.lines:
+      echo line.cut(opts)
 
 when isMainModule:
-  for line in main(commandLineParams()):
-    echo line
+  main(commandLineParams())
