@@ -1,4 +1,4 @@
-import clitools/[io, log]
+import clitools/log
 import parseopt, logging, unicode
 from strformat import `&`
 from os import commandLineParams
@@ -56,35 +56,32 @@ proc getCmdOpts*(params: seq[string]): Options =
     of cmdEnd:
       assert(false)  # cannot happen
 
-proc printCodepoint(lines: openArray[string]) =
-  echo "char code_point code_point(hex) code_point(short_hex)"
-  for line in lines:
-    for ch in line.toRunes:
-      let
-        codePoint = ch.ord
-        hex       = codePoint.toHex
-        shortHex  = hex.strip(trailing = false, chars = {'0'})
-      echo &"{ch} {codePoint} {hex} \\U{shortHex}"
+proc printCodepoint(line: string) =
+  for ch in line.toRunes:
+    let
+      codePoint = ch.ord
+      hex       = codePoint.toHex
+      shortHex  = hex.strip(trailing = false, chars = {'0'})
+    echo &"{ch} {codePoint} {hex} \\U{shortHex}"
 
 when isMainModule:
   let opts = getCmdOpts(commandLineParams())
   if opts.help or opts.version: quit 0
 
   setDebugLogger useDebug
-  
   debug appName, ": options = ", opts[]
   
+  echo "char code_point code_point(hex) code_point(short_hex)"
+
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
   if opts.args.len < 1:
     debug appName, ": read stdin"
-    let lines = stdin.readLines
-    printCodepoint lines
+    for line in stdin.lines:
+      printCodepoint line
     quit 0
 
   # 引数があればファイルの中身を読み取って処理する
   debug appName, ": read args files"
   for arg in opts.args:
-    var f = open(arg)
-    let lines = f.readLines
-    f.close
-    printCodepoint lines
+    for line in arg.lines:
+      printCodepoint line
