@@ -51,9 +51,6 @@ Repeat words.
 
 [source,bash]
 ----
-$ rep 10
-12345678910
-
 $ rep 5 A
 AAAAA
 
@@ -63,6 +60,13 @@ A BA BA BA BA B
 $ rep 1 3 5 A
 A
 AAA
+AAAAA
+
+$ rep $(seq 5) A
+A
+AA
+AAA
+AAAA
 AAAAA
 
 $ rep 10 -f:'%02d'
