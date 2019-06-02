@@ -148,13 +148,13 @@ $ echo A123B | ucut -d '\d+' -f 1,2
 A B
 ----
 
-=== pcp
+=== codepoint
 
 Prints code point.
 
 [source,bash]
 ----
-% echo あいうえお | pcp
+% echo あいうえお | codepoint
 char code_point code_point(hex) code_point(short_hex)
 あ 12354 0000000000003042 \U3042
 い 12356 0000000000003044 \U3044
@@ -162,7 +162,7 @@ char code_point code_point(hex) code_point(short_hex)
 え 12360 0000000000003048 \U3048
 お 12362 000000000000304A \U304A
 
-% ojichat | pcp
+% ojichat | codepoint
 char code_point code_point(hex) code_point(short_hex)
 ヤ 12516 00000000000030E4 \U30E4
 ッ 12483 00000000000030C3 \U30C3

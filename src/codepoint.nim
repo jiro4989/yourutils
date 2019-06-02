@@ -11,7 +11,7 @@ type
     args*: seq[string]
 
 const
-  appName = "pcp"
+  appName = "codepoint"
   version = "v1.0.0"
   doc = &"""
 {appName} prints code point.
