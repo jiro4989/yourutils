@@ -228,6 +228,26 @@ Align texts.
 ----
 ----
 
+== subnet
+
+Subnet mask. Copied from https://github.com/jiro4989/subcal.nim[subcal] repository.
+
+[source,bash]
+----
+$ subnet 100.100.200.1/24
+100.100.200.1	24	01100100011001001100100000000001	11111111111111111111111100000000
+
+$ subnet -Hc 100.100.200.1/24
+IPAddr	CIDR	Bin	Mask
+100.100.200.1	24	01100100011001001100100000000001	11111111111111111111111100000000
+
+$ subnet 0-32.100.200.1/24
+$ subnet -32.100.200.1/24
+$ subnet 64-.100.200.1/24
+$ subnet 128-.100.200.1/24
+$ subnet 100.100.200.0,8,16,24/24
+----
+
 == Install
 
 [source,bash]
