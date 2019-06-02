@@ -1,14 +1,11 @@
-import clitools/log
+import clitools/[log, option]
 import parseopt, logging, unicode
 from strformat import `&`
 from os import commandLineParams
 from strutils import toHex, strip
 
 type
-  Options* = ref object
-    help*: bool
-    version*: bool
-    args*: seq[string]
+  Options* = ref object of RootOptions
 
 const
   appName = "codepoint"
