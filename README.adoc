@@ -68,9 +68,6 @@ AA
 AAA
 AAAA
 AAAAA
-
-$ rep 10 -f:'%02d'
-01020304050607080910
 ----
 
 === balloon
