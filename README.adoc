@@ -29,6 +29,8 @@ nimble -v
 
 === flat
 
+Flats.
+
 [source,bash]
 ----
 $ seq 5 | flat
@@ -44,6 +46,8 @@ $ seq 5 | flat -d:,
 ----
 
 === rep
+
+Repeat words.
 
 [source,bash]
 ----
@@ -139,6 +143,8 @@ $ colful -p:RGB --oneline
 
 === ucut
 
+Unicode cut.
+
 [source,bash]
 ----
 $ echo １あ２あ３ | ucut -d あ -f 1,2
@@ -200,8 +206,19 @@ char code_point code_point(hex) code_point(short_hex)
 
 === align
 
+Align texts.
+
 [source,bash]
 ----
+% echo $'123\nあいう\nえお' | align right 
+   123
+あいう
+  えお
+
+% echo $'1234\nああああああ\nうえお' | align center -p:=  
+====1234====
+ああああああ
+===うえお===
 ----
 
 === aggr
