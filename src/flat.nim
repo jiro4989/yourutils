@@ -1,4 +1,7 @@
 import clitools/[io, log]
+
+import argparse
+
 import parseopt, logging
 from strutils import parseInt, join
 from strformat import `&`
@@ -6,63 +9,15 @@ from os import commandLineParams
 
 type
   Options* = ref object
-    help*: bool
-    version*: bool
     columnCount*: int
     delimiter*: string
-    args*: seq[string]
 
 const
   appName = "flat"
   version = "v1.0.0"
-  doc = &"""
-{appName} flats lines to lines.
-
-Usage:
-    {appName} tmp.txt
-    seq 5 | {appName}
-
-Options:
-    -h, --help                Print this help
-    -v, --version             Print version
-    -X, --debug               Print debug log
-    -n, --columncount:int     Count
-    -d, --delimiter:string    Delimiter
-"""
 
 var
   useDebug: bool
-
-proc getCmdOpts*(params: seq[string]): Options =
-  var optParser = initOptParser(params)
-  new result
-  result.columnCount = 0
-  result.delimiter = " "
-
-  # コマンドラインオプションを取得
-  for kind, key, val in optParser.getopt():
-      case kind
-      of cmdArgument:
-        result.args.add key
-      of cmdLongOption, cmdShortOption:
-        case key
-        of "help", "h":
-          echo doc
-          result.help = true
-          return
-        of "version", "v":
-          echo version
-          result.version = true
-          return
-        of "debug", "X":
-          useDebug = true
-        of "column-count", "n":
-          result.columnCount = val.parseInt
-          doAssert 0 < result.columnCount, &"{appName}: {key} = {result.columnCount}: parameters is illegal"
-        of "delimiter", "d":
-          result.delimiter = val
-      of cmdEnd:
-        assert(false)  # cannot happen
 
 proc joinLines*(lines: openArray[string], opts: Options): seq[string] =
   ## 行のデータをcolumnCountずつ１行にまとめる
@@ -78,25 +33,34 @@ proc joinLines*(lines: openArray[string], opts: Options): seq[string] =
   result.add s.join(opts.delimiter)
 
 proc main*(params: seq[string]): seq[string] =
-  let opts = getCmdOpts(params)
-  if opts.help or opts.version: return
+  var p = newParser(appName):
+    option("-n", "--columncount", help="Column count", default = "0")
+    option("-d", "--delimiter", help="Delimiter", default = " ")
+    flag("-X", "--debug", help="Debug")
+    arg("files", nargs = -1)
+  
+  var opts = p.parse(params)
+  useDebug = opts.debug
 
   setDebugLogger useDebug
-  debug appName, ": options = ", opts[]
+  debug appName, ": options = ", opts
   
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
   var lines: seq[string]
-  if opts.args.len < 1:
+  if opts.files.len < 1:
     debug appName, ": read stdin"
     lines = stdin.readLines
   else:
     debug appName, ": read args files"
-    for arg in opts.args:
+    for arg in opts.files:
       var f = open(arg)
       lines.add f.readLines
       f.close
   
-  result = lines.joinLines(opts)
+  let conf = new Options
+  conf.columnCount = opts.columnCount.parseInt()
+  conf.delimiter = opts.delimiter
+  result = lines.joinLines(conf)
 
 when isMainModule:
   for line in main(commandLineParams()):

@@ -14,6 +14,7 @@ bin           = @["flat", "rep", "align", "ucut", "codepoint"]
 requires "nim >= 0.19.4"
 requires "eastasianwidth >= 1.1.0"
 requires "alignment >= 1.0.0"
+requires "argparse >= 0.7.1"
 
 import strformat
 
