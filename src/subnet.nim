@@ -1,6 +1,11 @@
-import strutils, strformat, terminal, logging, net
+import clitools/[log, option]
+import strutils, strformat, terminal, logging, net, parseopt
+from os import commandLineParams
 
 type
+  Options* = ref object of RootOptions
+    printIPAddress*, printCIDR*, printIPAddressBin*, printIPAddressBinMask*, printColoredIPAddress*, printHeader*: bool
+    delimiter*: string
   IPv4* = object
     address*: string
     CIDR*: int
@@ -15,8 +20,8 @@ const
 {appName} is subnet calc.
 
 Usage:
-    subcal [options] <ip/cidr>...
-    subcal [options]
+    {appName} [options] <ip/cidr>...
+    {appName} [options]
 
 Options:
     -a, --ipaddress          show IP address
@@ -33,16 +38,68 @@ help options:
   -v --version      show version
 """
 
-proc parseIPv4Bin*(ip: string): string =
-  ## parseIPv4Bin はIPアドレス文字列を2進数に変換して返す
-  # パースに失敗したら例外を投げるのでそれを利用して書式チェック
+var
+  useDebug: bool
+
+proc getCmdOpts*(params: seq[string]): Options =
+  var optParser = initOptParser(params)
+  new result
+
+  # コマンドラインオプションを取得
+  for kind, key, val in optParser.getopt():
+    case kind
+    of cmdArgument:
+      result.args.add key
+    of cmdLongOption, cmdShortOption:
+      case key
+      of "help", "h":
+        echo doc
+        result.help = true
+        return
+      of "version", "v":
+        echo version
+        result.version = true
+        return
+      of "debug", "X":
+        useDebug = true
+      of "ipaddress", "a": result.printIPAddress = true
+      of "cidr", "r": result.printCIDR = true
+      of "bin", "b": result.printIPAddressBin = true
+      of "mask", "m": result.printIPAddressBinMask = true
+      of "color", "c": result.printColoredIPAddress = true
+      of "header", "H": result.printHeader = true
+      of "delimiter", "d": result.delimiter = val
+    of cmdEnd:
+      assert(false)  # cannot happen
+
+proc parseIPNumber*(ip: string): seq[int] =
+  ## 0-255
+  ## 2,3,4
+  ## -255
+  ## 20-
+  ## 1-6,19,33-
+  for s in ip.split(","):
+    if s.contains("-"):
+      let splited = s.split("-")
+      var startNum = 0
+      var endNum = 255
+      if splited[0] != "": startNum = splited[0].parseInt()
+      if splited[1] != "": endNum = splited[1].parseInt()
+      for i in startNum..endNum:
+        result.add(i)
+    else:
+      result.add(s.parseInt())
+
+proc toIPv4bin*(ip: string): string =
+  ## toIPv4bin はIPアドレス文字列を2進数に変換して返す
+  ## 変換に失敗したら例外を投げる。
   discard ip.parseIpAddress
   for ip in ip.split("."):
     let uip = ip.parseInt.toBin(8)
     result.add $uip
   
-proc parseMask*(i: int): string =
-  ## parseMask は2進数IPアドレスのマスクを返す
+proc toMask*(i: int): string =
+  ## toMask は2進数IPアドレスのマスクを返す
   var n = i
   if n < 0:
     n = 0
@@ -53,7 +110,7 @@ proc parseMask*(i: int): string =
   result = $one & $zero
 
 proc parseCIDR*(ipCIDR: string): IPv4 = 
-  ## parseCIDRはIP/CIDR文字列をパースしてIPv4として返す
+  ## parseCIDRはIP/CIDR文字列をパースしてIPv4オブジェクトとして返す
   let
     ipc = ipCIDR.split "/"
     ip = ipc[0]
@@ -64,10 +121,39 @@ proc parseCIDR*(ipCIDR: string): IPv4 =
   elif 32 < cidr:
     cidr = 32
   let
-    bin = ip.parseIPv4Bin
-    mask = cidr.parseMask
+    bin = ip.toIPv4bin
+    mask = cidr.toMask
   result = IPv4(address: ip, CIDR: cidr, bin: bin, mask: mask)
 
+when isMainModule:
+  let opts = getCmdOpts(commandLineParams())
+  if opts.help or opts.version: quit 0
+
+  setDebugLogger useDebug
+  debug appName, ": options = ", opts[]
+  
+  # オプションがすべてfalseなら全部trueにする
+  # wcコマンドと同じような設定のしかた
+  if not opts.printIPAddress and not opts.printCIDR and not opts.printIPAddressBin and not opts.printIPAddressBinMask:
+    opts.printIPAddress = true
+    opts.printCIDR = true
+    opts.printIPAddressBin = true
+    opts.printIPAddressBinMask = true
+
+  # 引数（ファイル）の指定がなければ標準入力を処理対象にする
+  if opts.args.len < 1:
+    debug appName, ": read stdin"
+    for line in stdin.lines:
+      #printCodepoint line
+      discard
+    quit 0
+
+  # 引数があればファイルの中身を読み取って処理する
+  debug appName, ": read args files"
+  for arg in opts.args:
+    for line in arg.lines:
+      #printCodepoint line
+      discard
 
 when false:
 

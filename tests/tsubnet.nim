@@ -1,35 +1,56 @@
 import unittest
 
 import subnet
+import strutils
 
-suite "parseBin":
+doAssert "-1".split("-") == @["", "1"]
+
+suite "parseIPNumber":
+  var rep: seq[int]
+  for i in 0..255:
+    rep.add i
+  test "0-255":
+    check "0-255".parseIPNumber == rep
+  test "2,3,4":
+    check "2,3,4".parseIPNumber == @[2, 3, 4]
+  test "-255":
+    check "-255".parseIPNumber == rep
+  test "20-":
+    var rep: seq[int]
+    for i in 20..255:
+      rep.add i
+    check "20-".parseIPNumber == rep
+  test "1-3,19,253-":
+    check "1-3,19,253-".parseIPNumber == @[1, 2, 3, 19, 253, 254, 255]
+
+suite "toIPv4bin":
   test "正常系":
-    check("00000000000000000000000000000001" == "0.0.0.1".parseIPv4Bin)
-    check("00000000000000000000000100000001" == "0.0.1.1".parseIPv4Bin)
-    check("00000000000000010000000100000001" == "0.1.1.1".parseIPv4Bin)
-    check("00000001000000010000000100000001" == "1.1.1.1".parseIPv4Bin)
-    check("00000000000000000000000000000010" == "0.0.0.2".parseIPv4Bin)
-    check("00000000000000000000000011111111" == "0.0.0.255".parseIPv4Bin)
-    check("11111111111111111111111111111111" == "255.255.255.255".parseIPv4Bin)
-  test "異常系 .0.0.1": expect(ValueError): discard ".0.0.1".parseIPv4Bin
-  test "異常系 0..0.1": expect(ValueError): discard "0..0.1".parseIPv4Bin
-  test "異常系 0.0..1": expect(ValueError): discard "0.0..1".parseIPv4Bin
-  test "異常系 0.0.1.": expect(ValueError): discard "0.0.1.".parseIPv4Bin
-  test "異常系 0.0.1.x": expect(ValueError): discard "0.0.1.x".parseIPv4Bin
-  test "異常系 0.0.1": expect(ValueError): discard "0.0.1".parseIPv4Bin
+    check("00000000000000000000000000000001" == "0.0.0.1".toIPv4bin)
+    check("00000000000000000000000100000001" == "0.0.1.1".toIPv4bin)
+    check("00000000000000010000000100000001" == "0.1.1.1".toIPv4bin)
+    check("00000001000000010000000100000001" == "1.1.1.1".toIPv4bin)
+    check("00000000000000000000000000000010" == "0.0.0.2".toIPv4bin)
+    check("00000000000000000000000011111111" == "0.0.0.255".toIPv4bin)
+    check("11111111111111111111111111111111" == "255.255.255.255".toIPv4bin)
+  test "異常系 .0.0.1": expect(ValueError): discard ".0.0.1".toIPv4bin
+  test "異常系 0..0.1": expect(ValueError): discard "0..0.1".toIPv4bin
+  test "異常系 0.0..1": expect(ValueError): discard "0.0..1".toIPv4bin
+  test "異常系 0.0.1.": expect(ValueError): discard "0.0.1.".toIPv4bin
+  test "異常系 0.0.1.x": expect(ValueError): discard "0.0.1.x".toIPv4bin
+  test "異常系 0.0.1": expect(ValueError): discard "0.0.1".toIPv4bin
 
-suite "parseMask":
+suite "toMask":
   test "00000000000000000000000000000000 < 1":
-    check("00000000000000000000000000000000" == (-1).parseMask)
-    check("00000000000000000000000000000000" == 0.parseMask)
+    check("00000000000000000000000000000000" == (-1).toMask)
+    check("00000000000000000000000000000000" == 0.toMask)
   test "10000000000000000000000000000000 == 1":
-    check("10000000000000000000000000000000" == 1.parseMask)
+    check("10000000000000000000000000000000" == 1.toMask)
   test "11000000000000000000000000000000 == 2":
-    check("11000000000000000000000000000000" == 2.parseMask)
+    check("11000000000000000000000000000000" == 2.toMask)
   test "11111111111111111111111111111111 == 32":
-    check("11111111111111111111111111111111" == 32.parseMask)
+    check("11111111111111111111111111111111" == 32.toMask)
   test "11111111111111111111111111111111 > 32":
-    check("11111111111111111111111111111111" == 33.parseMask)
+    check("11111111111111111111111111111111" == 33.toMask)
 
 suite "parseCIDR":
   test "正常系":
