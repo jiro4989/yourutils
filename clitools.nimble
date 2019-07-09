@@ -8,7 +8,7 @@ description   = "clitools is cli commands."
 license       = "MIT"
 srcDir        = "src"
 binDir        = "bin"
-bin           = @["flat", "rep", "align", "ucut", "codepoint"]
+bin           = @["flat", "rep", "align", "ucut", "codepoint", "tb"]
 
 
 # Dependencies
@@ -17,6 +17,7 @@ requires "nim >= 0.20.0"
 requires "eastasianwidth >= 1.1.0"
 requires "alignment >= 1.0.0"
 requires "argparse >= 0.7.1"
+requires "cligen >= 0.9.32"
 
 import strformat
 

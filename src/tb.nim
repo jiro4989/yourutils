@@ -1,72 +1,77 @@
-import argparse
+import strutils, strformat
+from sequtils import mapIt
 
-import clitools/[io, log, option]
-import clitools/private/common
+proc formatMarkdown*(rows: ref seq[seq[string]]): ref seq[string] =
+  new result
+  proc mdRow(cols: seq[string]): string = "|" & cols.join("|") & "|"
 
-import parseopt, logging
-from strutils import parseInt, join
-from strformat import `&`
-from os import commandLineParams
+  # ヘッダ
+  result[].add(rows[0].mdRow)
+  # ヘッダとボディの区切り線
+  result[].add(rows[0].mapIt(":---:").mdRow)
+  # ボディ
+  for row in rows[1..^1]:
+    result[].add(row.mdRow)
 
-type
-  Options* = ref object of RootOptions
-    delimiter*: string
-    format*: string
+proc formatHtml*(rows: ref seq[seq[string]]): ref seq[string] =
+  new result
+  proc mkTr(cols: seq[string]): string =
+    "<tr><td>" & cols.join("</td><td>") & "</td></tr>"
 
-const
-  appName = "tb"
+  result[].add("<table>")
+  result[].add("<thead>")
+  result[].add(rows[0].mkTr)
+  result[].add("</thead>")
+  result[].add("<tbody>")
+  for row in rows[1..^1]:
+    result[].add(row.mkTr)
+  result[].add("</tbody>")
+  result[].add("</table>")
 
-var
-  version: string
-  useDebug: bool
+proc formatAsciidoc*(rows: ref seq[seq[string]]): ref seq[string] =
+  new result
+  proc mkRow(cols: seq[string]): string = "|" & cols.join("|")
 
-include clitools/private/version
+  result[].add("""[options="header"]""")
+  result[].add("|=================")
+  for row in rows[]:
+    result[].add(row.mkRow)
+  result[].add("|=================")
 
-proc formatMarkdown*(opts: Options): seq[string] =
-  discard
+proc tb(delimiter="\t", format="markdown", files: seq[string]): int =
+  template formatEcho(rows: ref seq[seq[string]]) =
+    let lines =
+      case format
+      of "markdown": formatMarkdown(rows)
+      of "html": formatHtml(rows)
+      of "asciidoc": formatAsciidoc(rows)
+      else:
+        stderr.writeLine("Illegal format = " & format)
+        nil
+    if lines.isNil: return 1
+    for line in lines[]:
+      echo line
+    result = 0
 
-proc formatHtml*(opts: Options): seq[string] =
-  discard
-
-proc formatAsciidoc*(opts: Options): seq[string] =
-  discard
-
-proc main*(params: seq[string]): seq[string] =
-  var p = newParser(appName):
-    flag("-v", "--version", help="Print version")
-    flag("-X", "--debug", help="Debug")
-    option("-d", "--delimiter", help="Delimiter", default = " ")
-    option("-f", "--format", help="Output format. [markdown | html | asciidoc]",
-           default = "markdown")
-    arg("args", nargs = -1)
+  # ファイルが存在しない場合は標準入力を処理
+  if files.len < 1:
+    var rows = new seq[seq[string]]
+    var line: string
+    while stdin.readLine(line):
+      rows[].add(line.split(delimiter))
+    formatEcho(rows)
+    return
   
-  let opt = p.parse(params)
-  setOptions:
-    let opts = Options(
-      delimiter: opt.delimiter,
-      format: opt.format,
-      args: opt.args)
-
-  # TODO
-
-  # 引数（ファイル）の指定がなければ標準入力を処理対象にする
-  var lines: seq[string]
-  if opts.args.len < 1:
-    debug "read stdin"
-    lines = stdin.readLines
-  else:
-    debug "read args files"
-    for arg in opts.args:
-      var f = open(arg)
-      lines.add f.readLines
-      f.close
-  
-  result = lines.joinLines(opts)
+  # ファイルが存在するときは都度ファイルを開いて処理
+  for file in files:
+    var rows = new seq[seq[string]]
+    var f = open(file)
+    var line: string
+    while f.readLine(line):
+      rows[].add(line.split(delimiter))
+    formatEcho(rows)
+    f.close
 
 when isMainModule:
-  try:
-    for line in main(commandLineParams()):
-      echo line
-  except:
-    stderr.writeLine(getCurrentExceptionMsg())
-    quit 1
+  import cligen
+  dispatch(tb)
