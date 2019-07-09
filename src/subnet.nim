@@ -73,17 +73,23 @@ proc format(ipv4: IPv4, showIpAddress: bool, showCidr: bool,
   if showIpBinMask: col.add(ipv4.mask)
   result = col.join(delimiter)
 
-proc subnet(showIpAddress = true, showCidr = true,
-            showIpBin = true, showIpBinMask = true,
+proc subnet(ipAddress=false, cidr=false, bin=false, mask=false,
             useColor=false, delimiter="\t", showHeader=true,
             args: seq[string]): int =
-  # # オプションがすべてfalseなら全部trueにする
-  # # wcコマンドと同じような設定のしかた
-  # if not showIPAddress and not showCidr and not showIPBin and not showIPBinMask:
-  #   showIPAddress = true
-  #   showCIDR = true
-  #   showIPBin = true
-  #   showIPBinMask = true
+  var
+    showIpAddress = ipAddress
+    showCidr = cidr
+    showIpBin = bin
+    showIpBinMask = mask
+
+  # オプションがすべてfalseなら全部trueにする
+  # wcコマンドと同じような設定のしかた
+  if not showIPAddress and not showCidr and not showIPBin and not showIPBinMask:
+    showIPAddress = true
+    showCidr = true
+    showIPBin = true
+    showIPBinMask = true
+
   if showHeader:
     var header: seq[string]
     if showIpAddress: header.add("ip_address")
