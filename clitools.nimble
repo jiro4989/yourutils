@@ -27,4 +27,4 @@ task ci, "Run CI":
   exec "nimble build -d:release -Y"
   for b in bin:
     exec &"./bin/{b} -h"
-    exec &"./bin/{b} -v"
+    # exec &"./bin/{b} -v"
