@@ -41,37 +41,6 @@ help options:
 var
   useDebug: bool
 
-proc getCmdOpts*(params: seq[string]): Options =
-  var optParser = initOptParser(params)
-  new result
-
-  # コマンドラインオプションを取得
-  for kind, key, val in optParser.getopt():
-    case kind
-    of cmdArgument:
-      result.args.add key
-    of cmdLongOption, cmdShortOption:
-      case key
-      of "help", "h":
-        echo doc
-        result.help = true
-        return
-      of "version", "v":
-        echo version
-        result.version = true
-        return
-      of "debug", "X":
-        useDebug = true
-      of "ipaddress", "a": result.printIPAddress = true
-      of "cidr", "r": result.printCIDR = true
-      of "bin", "b": result.printIPAddressBin = true
-      of "mask", "m": result.printIPAddressBinMask = true
-      of "color", "c": result.printColoredIPAddress = true
-      of "header", "H": result.printHeader = true
-      of "delimiter", "d": result.delimiter = val
-    of cmdEnd:
-      assert(false)  # cannot happen
-
 proc parseIPNumber*(ip: string): seq[int] =
   ## 0-255
   ## 2,3,4
@@ -125,35 +94,36 @@ proc parseCIDR*(ipCIDR: string): IPv4 =
     mask = cidr.toMask
   result = IPv4(address: ip, CIDR: cidr, bin: bin, mask: mask)
 
-when isMainModule:
-  let opts = getCmdOpts(commandLineParams())
-  if opts.help or opts.version: quit 0
-
-  setDebugLogger useDebug
-  debug "options = ", opts[]
-  
+proc subnet(showIpAddress: var bool = false, showCidr: var bool = false,
+            showIpBin: var bool = false, showIpBinMask: var bool = false,
+            useColor=false, delimiter="\t", showHeader=false,
+            args: seq[string]): int =
   # オプションがすべてfalseなら全部trueにする
   # wcコマンドと同じような設定のしかた
-  if not opts.printIPAddress and not opts.printCIDR and not opts.printIPAddressBin and not opts.printIPAddressBinMask:
-    opts.printIPAddress = true
-    opts.printCIDR = true
-    opts.printIPAddressBin = true
-    opts.printIPAddressBinMask = true
+  if not showIPAddress and not showCidr and not showIPBin and not showIPBinMask:
+    showIPAddress = true
+    showCIDR = true
+    showIPBin = true
+    showIPBinMask = true
 
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
-  if opts.args.len < 1:
+  if args.len < 1:
     debug "read stdin"
     for line in stdin.lines:
       #printCodepoint line
       discard
-    quit 0
+    return
 
   # 引数があればファイルの中身を読み取って処理する
   debug "read args files"
-  for arg in opts.args:
+  for arg in args:
     for line in arg.lines:
       #printCodepoint line
       discard
+
+when isMainModule:
+  import cligen
+  dispatch(subnet)
 
 when false:
 
