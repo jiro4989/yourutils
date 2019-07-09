@@ -18,10 +18,12 @@ type
 
 const
   appName = "ucut"
-  version = "v1.0.0"
 
 var
+  version: string
   useDebug: bool
+
+include clitools/version
 
 proc cut*(line: string, opts: Options): string =
   let fields = line.split(opts.delimiter)

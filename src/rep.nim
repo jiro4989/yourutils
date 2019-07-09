@@ -16,10 +16,12 @@ type
 
 const
   appName = "repeat"
-  version = "v1.0.0"
 
 var
+  version: string
   useDebug: bool
+
+include clitools/version
 
 proc repeatString*(word: string, repeatCounts: openArray[int], opts: Options): seq[string] =
   debug &"{appName}: word = {word}, repeatCounts = {repeatCounts}, opts = {opts[]}"

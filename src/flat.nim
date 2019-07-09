@@ -14,10 +14,12 @@ type
 
 const
   appName = "flat"
-  version = "v1.0.0"
 
 var
+  version: string
   useDebug: bool
+
+include clitools/version
 
 proc joinLines*(lines: openArray[string], opts: Options): seq[string] =
   ## 行のデータをcolumnCountずつ１行にまとめる
