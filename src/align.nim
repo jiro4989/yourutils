@@ -2,7 +2,8 @@ import alignment
 
 import clitools/io
 
-import strutils, sequtils
+import sequtils
+from strutils import join
 
 proc left(length=0, pad=" ", writeFile=false, files: seq[string]): int =
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
@@ -64,6 +65,8 @@ proc right(length=0, pad=" ", writeFile=false, files: seq[string]): int =
       outf.writeLine(line)
     if outf != stdout: outf.close
 
-when isMainModule and false:
+when isMainModule:
   import cligen
-  dispatchMulti([left], [center])
+  dispatchMulti([left, short = {"length":'n'}],
+                [center, short = {"length":'n'}],
+                [right, short = {"length":'n'}])
