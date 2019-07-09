@@ -5,23 +5,23 @@ import strutils
 
 doAssert "-1".split("-") == @["", "1"]
 
-suite "parseIPNumber":
+suite "parseIpNumber":
   var rep: seq[int]
   for i in 0..255:
     rep.add i
   test "0-255":
-    check "0-255".parseIPNumber == rep
+    check "0-255".parseIpNumber == rep
   test "2,3,4":
-    check "2,3,4".parseIPNumber == @[2, 3, 4]
+    check "2,3,4".parseIpNumber == @[2, 3, 4]
   test "-255":
-    check "-255".parseIPNumber == rep
+    check "-255".parseIpNumber == rep
   test "20-":
     var rep: seq[int]
     for i in 20..255:
       rep.add i
-    check "20-".parseIPNumber == rep
+    check "20-".parseIpNumber == rep
   test "1-3,19,253-":
-    check "1-3,19,253-".parseIPNumber == @[1, 2, 3, 19, 253, 254, 255]
+    check "1-3,19,253-".parseIpNumber == @[1, 2, 3, 19, 253, 254, 255]
 
 suite "toIPv4bin":
   test "正常系":

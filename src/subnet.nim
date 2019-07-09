@@ -1,4 +1,5 @@
 import strutils, net
+from strformat import `&`
 
 type
   IPv4* = object
@@ -7,7 +8,7 @@ type
     bin*: string
     mask*: string
 
-proc parseIPNumber*(ip: string): seq[int] =
+proc parseIpNumber*(ip: string): seq[int] =
   ## 0-255
   ## 2,3,4
   ## -255
@@ -24,6 +25,19 @@ proc parseIPNumber*(ip: string): seq[int] =
         result.add(i)
     else:
       result.add(s.parseInt())
+
+iterator expandIp*(ipCidr: string): string =
+  ## 独自記法でのIP表現を通常のIP表現に展開する。
+  ## 展開した量は非常に巨大になる可能性があるためiteratorを使用する。
+  let ipc = ipCidr.split("/")
+  let ip = ipc[0]
+  let cidr = ipc[1]
+  let nums = ip.split(".")
+  for a in nums[0].parseIpNumber:
+    for b in nums[1].parseIpNumber:
+      for c in nums[2].parseIpNumber:
+        for d in nums[3].parseIpNumber:
+          yield &"{a}.{b}.{c}.{d}/{cidr}"
 
 proc toIPv4bin*(ip: string): string =
   ## toIPv4bin はIPアドレス文字列を2進数に変換して返す
@@ -74,7 +88,7 @@ proc format(ipv4: IPv4, showIpAddress: bool, showCidr: bool,
   result = col.join(delimiter)
 
 proc subnet(ipAddress=false, cidr=false, bin=false, mask=false,
-            useColor=false, delimiter="\t", showHeader=true,
+            color=false, delimiter="\t", header=true,
             args: seq[string]): int =
   var
     showIpAddress = ipAddress
@@ -90,7 +104,7 @@ proc subnet(ipAddress=false, cidr=false, bin=false, mask=false,
     showIPBin = true
     showIPBinMask = true
 
-  if showHeader:
+  if header:
     var header: seq[string]
     if showIpAddress: header.add("ip_address")
     if showCidr: header.add("cidr")
@@ -101,25 +115,27 @@ proc subnet(ipAddress=false, cidr=false, bin=false, mask=false,
   # 引数の指定がなければ標準入力を処理対象にする
   if args.len < 1:
     for line in stdin.lines:
-      let ipv4 = line.parseCidr
-      echo ipv4.format(showIpAddress=showIpAddress,
-                       showCidr=showCidr,
-                       showIpBin=showIpBin,
-                       showIpBinMask=showIpBinMask,
-                       useColor=useColor,
-                       delimiter=delimiter)
+      for exIp in line.expandIp:
+        let ipv4 = exIp.parseCidr
+        echo ipv4.format(showIpAddress=showIpAddress,
+                        showCidr=showCidr,
+                        showIpBin=showIpBin,
+                        showIpBinMask=showIpBinMask,
+                        useColor=color,
+                        delimiter=delimiter)
     return
 
   # 引数があればそれを入力として扱う
   for arg in args:
-    let ipv4 = arg.parseCidr
-    echo ipv4.format(showIpAddress=showIpAddress,
-                     showCidr=showCidr,
-                     showIpBin=showIpBin,
-                     showIpBinMask=showIpBinMask,
-                     useColor=useColor,
-                     delimiter=delimiter)
+    for exIp in arg.expandIp:
+      let ipv4 = exIp.parseCidr
+      echo ipv4.format(showIpAddress=showIpAddress,
+                      showCidr=showCidr,
+                      showIpBin=showIpBin,
+                      showIpBinMask=showIpBinMask,
+                      useColor=color,
+                      delimiter=delimiter)
 
 when isMainModule:
   import cligen
-  dispatch(subnet)
+  dispatch(subnet, short={"color":'C'})
