@@ -1,62 +1,29 @@
-import argparse
+import unicode, strutils
 
-import clitools/[log, option]
-import clitools/private/common
-
-import parseopt, logging, unicode
-from strformat import `&`
-from os import commandLineParams
-from strutils import toHex, strip
-
-type
-  Options* = ref object of RootOptions
-
-const
-  appName = "codepoint"
-
-var
-  version: string
-  useDebug: bool
-
-include clitools/private/version
-
-proc printCodepoint(line: string) =
+iterator genCpRow(line: string, delimiter: string): string =
   for ch in line.toRunes:
     let
       codePoint = ch.ord
-      hex       = codePoint.toHex
-      shortHex  = hex.strip(trailing = false, chars = {'0'})
-    echo &"{ch} {codePoint} {hex} \\U{shortHex}"
+      hex = codePoint.toHex
+      shortHex = hex.strip(trailing = false, chars = {'0'})
+    yield [$ch, $codePoint, "\\U" & shortHex].join(delimiter)
 
-proc main*(params: seq[string]) =
-  var p = newParser(appName):
-    flag("-v", "--version", help="Print version")
-    flag("-X", "--debug", help="Debug")
-    arg("args", nargs = -1)
-
-  let opt = p.parse(params)
-  setOptions:
-    let opts = Options(
-      args: opt.args)
-
-  echo "char code_point code_point(hex) code_point(short_hex)"
+proc codepoint(delimiter=" ", files: seq[string]): int =
+  echo ["char", "code_point", "code_point(hex)"].join(delimiter)
 
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
-  if opts.args.len < 1:
-    debug "read stdin"
+  if files.len < 1:
     for line in stdin.lines:
-      printCodepoint line
-    quit 0
+      for row in line.genCpRow(delimiter):
+        echo row
+    return
 
   # 引数があればファイルの中身を読み取って処理する
-  debug "read args files"
-  for arg in opts.args:
-    for line in arg.lines:
-      printCodepoint line
+  for file in files:
+    for line in file.lines:
+      for row in line.genCpRow(delimiter):
+        echo row
 
 when isMainModule:
-  try:
-    main(commandLineParams())
-  except:
-    stderr.writeLine(getCurrentExceptionMsg())
-    quit 1
+  import cligen
+  dispatch(codepoint)
