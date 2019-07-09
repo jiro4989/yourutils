@@ -55,6 +55,7 @@ proc main*(params: seq[string]): seq[string] =
     useStdin: opt.stdin,
     args: opt.args)
 
+  useDebug = opt.debug
   setDebugLogger useDebug
   debug appName, ": options = ", opts[]
 

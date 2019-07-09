@@ -1,4 +1,7 @@
+import argparse
+
 import clitools/[io, log]
+
 import alignment
 import parseopt, logging
 from strutils import parseInt, split, join
@@ -8,8 +11,6 @@ from os import commandLineParams
 
 type
   Options* = ref object
-    help*: bool
-    version*: bool
     delimiter*: string
     outputDelimiter*: string
     fields*: seq[int]
@@ -18,59 +19,9 @@ type
 const
   appName = "ucut"
   version = "v1.0.0"
-  doc = &"""
-{appName} aligns texts.
-
-Usage:
-    {appName} [options] <files...>
-
-Options:
-    -h, --help                       Print this help
-    -v, --version                    Print version
-    -X, --debug                      Print debug log
-    -d, --delimiter:string           Delimiter [default: " "]
-    -D, --output-delimiter:string    Output delimiter [default: " "]
-                                     Format is '1,2,3' or '2-' or '-2'
-    -f, --field:filed                Print field
-"""
 
 var
   useDebug: bool
-
-proc getCmdOpts*(params: seq[string]): Options =
-  var optParser = initOptParser(params)
-  new result
-  result.delimiter = " "
-  result.outputDelimiter = " "
-  result.fields.add 1
-
-  # コマンドラインオプションを取得
-  for kind, key, val in optParser.getopt():
-    case kind
-    of cmdArgument:
-      result.args.add key
-    of cmdLongOption, cmdShortOption:
-      case key
-      of "help", "h":
-        echo doc
-        result.help = true
-        return
-      of "version", "v":
-        echo version
-        result.version = true
-        return
-      of "debug", "X":
-        useDebug = true
-      of "delimiter", "d":
-        result.delimiter = val
-      of "output-delimiter", "D":
-        result.outputDelimiter = val
-      of "field", "f":
-        let fields = val.split(",").mapIt(it.parseInt)
-        result.fields = fields
-    of cmdEnd:
-      assert(false)  # cannot happen
-
 
 proc cut*(line: string, opts: Options): string =
   let fields = line.split(opts.delimiter)
@@ -82,9 +33,30 @@ proc cut*(line: string, opts: Options): string =
   result = outf.join(opts.outputDelimiter)
 
 proc main*(params: seq[string]) =
-  let opts = getCmdOpts(params)
-  if opts.help or opts.version: return
+  var p = newParser(appName):
+    flag("-v", "--version", help="Print version")
+    flag("-X", "--debug", help="Debug")
+    option("-d", "--delimiter", help="Delimiter", default = " ")
+    option("-D", "--output-delimiter", help="Output delimiter", default = " ")
+    option("-f", "--fields", help="Output delimiter", default = "1")
+    arg("args", nargs = -1)
 
+  let opt = p.parse(params)
+
+  if opt.help:
+    quit 0
+  
+  if opt.version:
+    echo version
+    quit 0
+
+  let opts = Options(
+    delimiter: opt.delimiter,
+    outputDelimiter: opt.outputDelimiter,
+    fields: opt.fields.split(",").mapIt(it.parseInt),
+    args: opt.args)
+
+  useDebug = opt.debug
   setDebugLogger useDebug
   debug appName, ": options = ", opts[]
   
