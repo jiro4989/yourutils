@@ -138,4 +138,4 @@ proc subnet(ipAddress=false, cidr=false, bin=false, mask=false,
 
 when isMainModule:
   import cligen
-  dispatch(subnet, short={"color":'C'})
+  dispatch(subnet, short={"color":'C', "header":'H'})
