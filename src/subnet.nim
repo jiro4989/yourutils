@@ -98,7 +98,7 @@ proc subnet(ipAddress=false, cidr=false, bin=false, mask=false,
     if showIpBinMask: header.add("mask")
     echo header.join(delimiter)
 
-  # 引数（ファイル）の指定がなければ標準入力を処理対象にする
+  # 引数の指定がなければ標準入力を処理対象にする
   if args.len < 1:
     for line in stdin.lines:
       let ipv4 = line.parseCidr
