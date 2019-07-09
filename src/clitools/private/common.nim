@@ -10,4 +10,4 @@ template setOptions*(body: untyped) =
 
   useDebug = opt.debug
   setDebugLogger useDebug
-  debug appName, ": options = ", opts[]
+  debug "options = ", opts[]

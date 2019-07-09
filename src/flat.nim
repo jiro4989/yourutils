@@ -27,10 +27,10 @@ proc joinLines*(lines: openArray[string], opts: Options): seq[string] =
   ## columnCountが初期値(-1)の場合は1行にまとめる
   var s: seq[string]
   for i, v in lines:
-    debug appName, ": process line = ", v
+    debug "process line = ", v
     s.add v
     if 0 < opts.columnCount and (i+1) mod opts.columnCount == 0:
-      debug appName, ": result = ", result.join, ", s = ", s.join
+      debug "result = ", result.join, ", s = ", s.join
       result.add s.join(opts.delimiter)
       s = @[]
   result.add s.join(opts.delimiter)
@@ -53,10 +53,10 @@ proc main*(params: seq[string]): seq[string] =
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
   var lines: seq[string]
   if opts.args.len < 1:
-    debug appName, ": read stdin"
+    debug "read stdin"
     lines = stdin.readLines
   else:
-    debug appName, ": read args files"
+    debug "read args files"
     for arg in opts.args:
       var f = open(arg)
       lines.add f.readLines

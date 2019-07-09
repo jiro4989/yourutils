@@ -53,12 +53,12 @@ proc main*(params: seq[string]) =
 
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
   if opts.args.len < 1:
-    debug appName, ": read stdin"
+    debug "read stdin"
     for line in stdin.lines:
       echo line.cut(opts)
 
   # 引数があればファイルの中身を読み取って処理する
-  debug appName, ": read args files"
+  debug "read args files"
   for arg in opts.args:
     for line in arg.lines:
       echo line.cut(opts)

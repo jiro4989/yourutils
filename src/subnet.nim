@@ -130,7 +130,7 @@ when isMainModule:
   if opts.help or opts.version: quit 0
 
   setDebugLogger useDebug
-  debug appName, ": options = ", opts[]
+  debug "options = ", opts[]
   
   # オプションがすべてfalseなら全部trueにする
   # wcコマンドと同じような設定のしかた
@@ -142,14 +142,14 @@ when isMainModule:
 
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
   if opts.args.len < 1:
-    debug appName, ": read stdin"
+    debug "read stdin"
     for line in stdin.lines:
       #printCodepoint line
       discard
     quit 0
 
   # 引数があればファイルの中身を読み取って処理する
-  debug appName, ": read args files"
+  debug "read args files"
   for arg in opts.args:
     for line in arg.lines:
       #printCodepoint line

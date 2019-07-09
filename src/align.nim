@@ -102,17 +102,17 @@ when isMainModule:
 
   setDebugLogger useDebug
   
-  debug appName, ": options = ", opts[]
+  debug "options = ", opts[]
   
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
   if opts.args.len < 1:
-    debug appName, ": read stdin"
+    debug "read stdin"
     let lines = stdin.readLines
     execSubcmd stdout, lines, opts
     quit 0
 
   # 引数があればファイルの中身を読み取って処理する
-  debug appName, ": read args files"
+  debug "read args files"
   for arg in opts.args:
     var f = open(arg)
     let lines = f.readLines
