@@ -75,4 +75,8 @@ proc main*(params: seq[string]) =
       echo line.cut(opts)
 
 when isMainModule:
-  main(commandLineParams())
+  try:
+    main(commandLineParams())
+  except:
+    stderr.writeLine(getCurrentExceptionMsg())
+    quit 1

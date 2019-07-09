@@ -68,5 +68,9 @@ proc main*(params: seq[string]): seq[string] =
   result = lines.joinLines(conf)
 
 when isMainModule:
-  for line in main(commandLineParams()):
-    echo line
+  try:
+    for line in main(commandLineParams()):
+      echo line
+  except:
+    stderr.writeLine(getCurrentExceptionMsg())
+    quit 1
