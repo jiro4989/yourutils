@@ -1,6 +1,7 @@
 import argparse
 
 import clitools/[log, option]
+import clitools/private/common
 
 import parseopt, logging, unicode
 from strformat import `&`
@@ -34,21 +35,10 @@ proc main*(params: seq[string]) =
     arg("args", nargs = -1)
 
   let opt = p.parse(params)
+  setOptions:
+    let opts = Options(
+      args: opt.args)
 
-  if opt.help:
-    quit 0
-  
-  if opt.version:
-    echo version
-    quit 0
-
-  let opts = Options(
-    args: opt.args)
-
-  useDebug = opt.debug
-  setDebugLogger useDebug
-  debug appName, ": options = ", opts[]
-  
   echo "char code_point code_point(hex) code_point(short_hex)"
 
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする

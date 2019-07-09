@@ -1,6 +1,7 @@
 import argparse
 
-import clitools/[io, log]
+import clitools/[io, log, option]
+import clitools/private/common
 
 import parseopt, logging, unicode
 from strutils import parseInt, join, repeat
@@ -9,10 +10,9 @@ from sequtils import mapIt
 from os import commandLineParams
 
 type
-  Options* = ref object
+  Options* = ref object of RootOptions
     delimiter*: string
     useStdin*: bool
-    args*: seq[string]
 
 const
   appName = "repeat"
@@ -44,22 +44,11 @@ proc main*(params: seq[string]): seq[string] =
     arg("args", nargs = -1)
 
   let opt = p.parse(params)
-
-  if opt.help:
-    quit 0
-
-  if opt.version:
-    echo version
-    quit 0
-
-  let opts = Options(
-    delimiter: opt.delimiter,
-    useStdin: opt.stdin,
-    args: opt.args)
-
-  useDebug = opt.debug
-  setDebugLogger useDebug
-  debug appName, ": options = ", opts[]
+  setOptions:
+    let opts = Options(
+      delimiter: opt.delimiter,
+      useStdin: opt.stdin,
+      args: opt.args)
 
   doAssert 0 < opts.args.len, &"{appName}: must count of arguments is over 0"
 

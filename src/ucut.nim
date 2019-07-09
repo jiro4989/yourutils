@@ -1,6 +1,7 @@
 import argparse
 
-import clitools/[io, log]
+import clitools/[io, log, option]
+import clitools/private/common
 
 import alignment
 import parseopt, logging
@@ -10,11 +11,10 @@ from sequtils import mapIt, repeat
 from os import commandLineParams
 
 type
-  Options* = ref object
+  Options* = ref object of RootOptions
     delimiter*: string
     outputDelimiter*: string
     fields*: seq[int]
-    args*: seq[string]
 
 const
   appName = "ucut"
@@ -44,24 +44,13 @@ proc main*(params: seq[string]) =
     arg("args", nargs = -1)
 
   let opt = p.parse(params)
+  setOptions:
+    let opts = Options(
+      delimiter: opt.delimiter,
+      outputDelimiter: opt.outputDelimiter,
+      fields: opt.fields.split(",").mapIt(it.parseInt),
+      args: opt.args)
 
-  if opt.help:
-    quit 0
-  
-  if opt.version:
-    echo version
-    quit 0
-
-  let opts = Options(
-    delimiter: opt.delimiter,
-    outputDelimiter: opt.outputDelimiter,
-    fields: opt.fields.split(",").mapIt(it.parseInt),
-    args: opt.args)
-
-  useDebug = opt.debug
-  setDebugLogger useDebug
-  debug appName, ": options = ", opts[]
-  
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
   if opts.args.len < 1:
     debug appName, ": read stdin"

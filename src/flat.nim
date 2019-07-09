@@ -1,6 +1,7 @@
 import argparse
 
-import clitools/[io, log]
+import clitools/[io, log, option]
+import clitools/private/common
 
 import parseopt, logging
 from strutils import parseInt, join
@@ -8,7 +9,7 @@ from strformat import `&`
 from os import commandLineParams
 
 type
-  Options* = ref object
+  Options* = ref object of RootOptions
     columnCount*: int
     delimiter*: string
 
@@ -36,36 +37,32 @@ proc joinLines*(lines: openArray[string], opts: Options): seq[string] =
 
 proc main*(params: seq[string]): seq[string] =
   var p = newParser(appName):
+    flag("-v", "--version", help="Print version")
+    flag("-X", "--debug", help="Debug")
     option("-n", "--columncount", help="Column count", default = "0")
     option("-d", "--delimiter", help="Delimiter", default = " ")
-    flag("-X", "--debug", help="Debug")
-    arg("files", nargs = -1)
+    arg("args", nargs = -1)
   
-  var opts = p.parse(params)
+  let opt = p.parse(params)
+  setOptions:
+    let opts = Options(
+      columnCount: opt.columncount.parseInt,
+      delimiter: opt.delimiter,
+      args: opt.args)
 
-  if opts.help:
-    quit 0
-
-  useDebug = opts.debug
-  setDebugLogger useDebug
-  debug appName, ": options = ", opts
-  
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
   var lines: seq[string]
-  if opts.files.len < 1:
+  if opts.args.len < 1:
     debug appName, ": read stdin"
     lines = stdin.readLines
   else:
     debug appName, ": read args files"
-    for arg in opts.files:
+    for arg in opts.args:
       var f = open(arg)
       lines.add f.readLines
       f.close
   
-  let conf = new Options
-  conf.columnCount = opts.columnCount.parseInt()
-  conf.delimiter = opts.delimiter
-  result = lines.joinLines(conf)
+  result = lines.joinLines(opts)
 
 when isMainModule:
   try:
