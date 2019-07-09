@@ -17,7 +17,7 @@ var
   version: string
   useDebug: bool
 
-include clitools/version
+include clitools/private/version
 
 proc printCodepoint(line: string) =
   for ch in line.toRunes:

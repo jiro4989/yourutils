@@ -1,4 +1,4 @@
-include src/clitools/version
+include src/clitools/private/version
 
 # Package
 

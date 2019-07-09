@@ -21,7 +21,7 @@ var
   version: string
   useDebug: bool
 
-include clitools/version
+include clitools/private/version
 
 proc repeatString*(word: string, repeatCounts: openArray[int], opts: Options): seq[string] =
   debug &"{appName}: word = {word}, repeatCounts = {repeatCounts}, opts = {opts[]}"

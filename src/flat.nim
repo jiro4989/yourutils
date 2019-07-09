@@ -19,7 +19,7 @@ var
   version: string
   useDebug: bool
 
-include clitools/version
+include clitools/private/version
 
 proc joinLines*(lines: openArray[string], opts: Options): seq[string] =
   ## 行のデータをcolumnCountずつ１行にまとめる

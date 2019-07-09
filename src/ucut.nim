@@ -23,7 +23,7 @@ var
   version: string
   useDebug: bool
 
-include clitools/version
+include clitools/private/version
 
 proc cut*(line: string, opts: Options): string =
   let fields = line.split(opts.delimiter)
