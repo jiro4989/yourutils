@@ -13,7 +13,7 @@ bin           = @["flat", "rep", "align", "ucut", "codepoint"]
 
 # Dependencies
 
-requires "nim >= 0.19.4"
+requires "nim >= 0.20.0"
 requires "eastasianwidth >= 1.1.0"
 requires "alignment >= 1.0.0"
 requires "argparse >= 0.7.1"
