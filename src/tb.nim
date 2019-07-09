@@ -39,6 +39,7 @@ proc formatAsciidoc*(rows: ref seq[seq[string]]): ref seq[string] =
   result[].add("|=================")
 
 proc tb(delimiter="\t", format="markdown", files: seq[string]): int =
+  ## tb converts to table (markdown or html or asciidoc).
   template formatEcho(rows: ref seq[seq[string]]) =
     let lines =
       case format
