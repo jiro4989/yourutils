@@ -1,6 +1,6 @@
-import clitools/[io, log]
-
 import argparse
+
+import clitools/[io, log]
 
 import parseopt, logging
 from strutils import parseInt, join
@@ -40,8 +40,11 @@ proc main*(params: seq[string]): seq[string] =
     arg("files", nargs = -1)
   
   var opts = p.parse(params)
-  useDebug = opts.debug
 
+  if opts.help:
+    quit 0
+
+  useDebug = opts.debug
   setDebugLogger useDebug
   debug appName, ": options = ", opts
   

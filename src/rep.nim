@@ -1,4 +1,7 @@
+import argparse
+
 import clitools/[io, log]
+
 import parseopt, logging, unicode
 from strutils import parseInt, join, repeat
 from strformat import `&`
@@ -7,9 +10,6 @@ from os import commandLineParams
 
 type
   Options* = ref object
-    help*: bool
-    version*: bool
-    format*: string
     delimiter*: string
     useStdin*: bool
     args*: seq[string]
@@ -17,55 +17,9 @@ type
 const
   appName = "repeat"
   version = "v1.0.0"
-  doc = &"""
-{appName} repeats a word
-
-Usage:
-    {appName} [options] (count...) [word]
-
-Examples:
-    {appName} 5 A
-    {appName} 3 5 A
-    echo word | {appName} 2 3 -i
-
-Options:
-    -h, --help                Print this help
-    -v, --version             Print version
-    -X, --debug               Print debug log
-    -f, --format:string       Format
-    -d, --delimiter:string    Delimiter
-    -i, --stdin               Use stdin
-"""
 
 var
   useDebug: bool
-
-proc getCmdOpts*(params: seq[string]): Options =
-  new result
-  var optParser = initOptParser(params)
-
-  # コマンドラインオプションを取得
-  for kind, key, val in optParser.getopt():
-    case kind
-    of cmdArgument:
-      result.args.add key
-    of cmdLongOption, cmdShortOption:
-      case key
-      of "help", "h":
-        echo doc
-        result.help = true
-        return
-      of "version", "v":
-        echo version
-        result.version = true
-        return
-      of "debug", "X": useDebug = true
-      of "format", "f": result.format = val
-      of "delimiter", "d": result.delimiter = val
-      of "stdin", "i": result.useStdin = true
-    of cmdEnd:
-      assert(false)  # cannot happen
-
 
 proc repeatString*(word: string, repeatCounts: openArray[int], opts: Options): seq[string] =
   debug &"{appName}: word = {word}, repeatCounts = {repeatCounts}, opts = {opts[]}"
@@ -80,8 +34,26 @@ proc repeatString*(word: string, repeatCounts: openArray[int], opts: Options): s
     result.add s.join
 
 proc main*(params: seq[string]): seq[string] =
-  let opts = getCmdOpts(params)
-  if opts.help or opts.version: return
+  var p = newParser(appName):
+    flag("-v", "--version", help="Print version")
+    flag("-X", "--debug", help="Debug")
+    option("-d", "--delimiter", help="Delimiter", default = "")
+    flag("-i", "--stdin", help="Debug")
+    arg("args", nargs = -1)
+
+  let opt = p.parse(params)
+
+  if opt.help:
+    quit 0
+
+  if opt.version:
+    echo version
+    quit 0
+
+  let opts = Options(
+    delimiter: opt.delimiter,
+    useStdin: opt.stdin,
+    args: opt.args)
 
   setDebugLogger useDebug
   debug appName, ": options = ", opts[]
@@ -101,5 +73,9 @@ proc main*(params: seq[string]): seq[string] =
   result = word.repeatString(repeatCounts, opts)
 
 when isMainModule:
-  for line in main(commandLineParams()):
-    echo line
+  try:
+    for line in main(commandLineParams()):
+      echo line
+  except:
+    stderr.writeLine(getCurrentExceptionMsg())
+    quit 1
