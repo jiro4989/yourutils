@@ -1,4 +1,7 @@
+import argparse
+
 import clitools/[log, option]
+
 import parseopt, logging, unicode
 from strformat import `&`
 from os import commandLineParams
@@ -9,49 +12,12 @@ type
 
 const
   appName = "codepoint"
-  version = "v1.0.0"
-  doc = &"""
-{appName} prints code point.
-
-Usage:
-    {appName} [options] <words...>
-
-Options:
-    -h, --help                Print this help
-    -v, --version             Print version
-    -X, --debug               Print debug log
-    -c, --codepoint           Print code point
-    -H, --hex                 Print hex code point
-    -s, --shorthex            Print short hex code point
-    -n, --noheader            Not print header
-"""
 
 var
+  version: string
   useDebug: bool
 
-proc getCmdOpts*(params: seq[string]): Options =
-  var optParser = initOptParser(params)
-  new result
-
-  # コマンドラインオプションを取得
-  for kind, key, val in optParser.getopt():
-    case kind
-    of cmdArgument:
-      result.args.add key
-    of cmdLongOption, cmdShortOption:
-      case key
-      of "help", "h":
-        echo doc
-        result.help = true
-        return
-      of "version", "v":
-        echo version
-        result.version = true
-        return
-      of "debug", "X":
-        useDebug = true
-    of cmdEnd:
-      assert(false)  # cannot happen
+include clitools/version
 
 proc printCodepoint(line: string) =
   for ch in line.toRunes:
@@ -61,10 +27,25 @@ proc printCodepoint(line: string) =
       shortHex  = hex.strip(trailing = false, chars = {'0'})
     echo &"{ch} {codePoint} {hex} \\U{shortHex}"
 
-when isMainModule:
-  let opts = getCmdOpts(commandLineParams())
-  if opts.help or opts.version: quit 0
+proc main*(params: seq[string]) =
+  var p = newParser(appName):
+    flag("-v", "--version", help="Print version")
+    flag("-X", "--debug", help="Debug")
+    arg("args", nargs = -1)
 
+  let opt = p.parse(params)
+
+  if opt.help:
+    quit 0
+  
+  if opt.version:
+    echo version
+    quit 0
+
+  let opts = Options(
+    args: opt.args)
+
+  useDebug = opt.debug
   setDebugLogger useDebug
   debug appName, ": options = ", opts[]
   
@@ -82,3 +63,10 @@ when isMainModule:
   for arg in opts.args:
     for line in arg.lines:
       printCodepoint line
+
+when isMainModule:
+  try:
+    main(commandLineParams())
+  except:
+    stderr.writeLine(getCurrentExceptionMsg())
+    quit 1
