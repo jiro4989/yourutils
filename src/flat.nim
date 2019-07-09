@@ -1,73 +1,32 @@
-import argparse
+import clitools/io
 
-import clitools/[io, log, option]
-import clitools/private/common
+import strutils
 
-import parseopt, logging
-from strutils import parseInt, join
-from strformat import `&`
-from os import commandLineParams
-
-type
-  Options* = ref object of RootOptions
-    columnCount*: int
-    delimiter*: string
-
-const
-  appName = "flat"
-
-var
-  version: string
-  useDebug: bool
-
-include clitools/private/version
-
-proc joinLines*(lines: openArray[string], opts: Options): seq[string] =
+proc joinLines*(lines: openArray[string], columnCount: int, delimiter: string): seq[string] =
   ## 行のデータをcolumnCountずつ１行にまとめる
   ## columnCountが初期値(-1)の場合は1行にまとめる
   var s: seq[string]
   for i, v in lines:
-    debug "process line = ", v
     s.add v
-    if 0 < opts.columnCount and (i+1) mod opts.columnCount == 0:
-      debug "result = ", result.join, ", s = ", s.join
-      result.add s.join(opts.delimiter)
+    if 0 < columnCount and (i+1) mod columnCount == 0:
+      result.add s.join(delimiter)
       s = @[]
-  result.add s.join(opts.delimiter)
+  result.add s.join(delimiter)
 
-proc main*(params: seq[string]): seq[string] =
-  var p = newParser(appName):
-    flag("-v", "--version", help="Print version")
-    flag("-X", "--debug", help="Debug")
-    option("-n", "--columncount", help="Column count", default = "0")
-    option("-d", "--delimiter", help="Delimiter", default = " ")
-    arg("args", nargs = -1)
-  
-  let opt = p.parse(params)
-  setOptions:
-    let opts = Options(
-      columnCount: opt.columncount.parseInt,
-      delimiter: opt.delimiter,
-      args: opt.args)
+proc flat(columnCount=0, delimiter=" ", files: seq[string]): int =
+ # 引数（ファイル）の指定がなければ標準入力を処理対象にする
+  if files.len < 1:
+    for line in stdin.readLines.joinLines(columnCount, delimiter):
+      echo line
+    return
 
-  # 引数（ファイル）の指定がなければ標準入力を処理対象にする
-  var lines: seq[string]
-  if opts.args.len < 1:
-    debug "read stdin"
-    lines = stdin.readLines
-  else:
-    debug "read args files"
-    for arg in opts.args:
-      var f = open(arg)
-      lines.add f.readLines
-      f.close
-  
-  result = lines.joinLines(opts)
+  # 引数があればファイルとして処理
+  for arg in files:
+    var f = open(arg)
+    for line in f.readLines.joinLines(columnCount, delimiter):
+      echo line
+    f.close
 
 when isMainModule:
-  try:
-    for line in main(commandLineParams()):
-      echo line
-  except:
-    stderr.writeLine(getCurrentExceptionMsg())
-    quit 1
+  import cligen
+  dispatch(flat, short = {"columnCount":'n'})
