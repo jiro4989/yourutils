@@ -1,5 +1,3 @@
-import argparse
-
 import strutils, sequtils
 
 proc cut*(line: string, delimiter: string, outputDelimiter: string, fields: seq[int]): string =

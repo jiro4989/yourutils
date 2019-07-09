@@ -1,6 +1,4 @@
-import argparse
-
-import sequtils
+import sequtils, strutils
 
 proc repeatString*(word: string, repeatCounts: openArray[int], delimiter: string): seq[string] =
   if repeatCounts.len < 1: return
