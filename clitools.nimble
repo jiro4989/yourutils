@@ -1,8 +1,6 @@
-include src/clitools/private/version
-
 # Package
 
-# version       = "1.0.0"
+version       = "1.0.0"
 author        = "jiro4989"
 description   = "clitools is cli commands."
 license       = "MIT"
