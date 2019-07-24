@@ -24,4 +24,6 @@ proc ucut(delimiter=" ", outputDelimiter=" ", fields="1", files: seq[string]): i
 
 when isMainModule:
   import cligen
+  import clitools/appinfo
+  clCfg.version = version
   dispatch(ucut, short = {"outputDelimiter": 'D'})

@@ -138,4 +138,6 @@ proc subnet(ipAddress=false, cidr=false, bin=false, mask=false,
 
 when isMainModule:
   import cligen
+  import clitools/appinfo
+  clCfg.version = version
   dispatch(subnet, short={"color":'C', "header":'H'})

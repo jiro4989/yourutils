@@ -26,4 +26,6 @@ proc codepoint(delimiter=" ", files: seq[string]): int =
 
 when isMainModule:
   import cligen
+  import clitools/appinfo
+  clCfg.version = version
   dispatch(codepoint)

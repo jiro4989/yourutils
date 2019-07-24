@@ -30,4 +30,6 @@ proc rep(delimiter="", useStdin=false, args: seq[string]): int =
 
 when isMainModule:
   import cligen
+  import clitools/appinfo
+  clCfg.version = version
   dispatch(rep, short = {"useStdin": 'i'})

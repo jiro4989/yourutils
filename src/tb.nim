@@ -43,9 +43,9 @@ proc tb(delimiter="\t", format="markdown", files: seq[string]): int =
   template formatEcho(rows: ref seq[seq[string]]) =
     let lines =
       case format
-      of "markdown": formatMarkdown(rows)
+      of "markdown", "md": formatMarkdown(rows)
       of "html": formatHtml(rows)
-      of "asciidoc": formatAsciidoc(rows)
+      of "asciidoc", "adoc": formatAsciidoc(rows)
       else:
         stderr.writeLine("Illegal format = " & format)
         nil
@@ -75,4 +75,6 @@ proc tb(delimiter="\t", format="markdown", files: seq[string]): int =
 
 when isMainModule:
   import cligen
-  dispatch(tb)
+  import clitools/appinfo
+  clCfg.version = version
+  dispatch(tb, help = {"format":"print format of table. (markdown | md | html | asciidoc | adoc)"})

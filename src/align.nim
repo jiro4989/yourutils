@@ -67,6 +67,8 @@ proc right(length=0, pad=" ", writeFile=false, files: seq[string]): int =
 
 when isMainModule:
   import cligen
+  import clitools/appinfo
+  clCfg.version = version
   dispatchMulti([left, short = {"length":'n'}],
                 [center, short = {"length":'n'}],
                 [right, short = {"length":'n'}])
