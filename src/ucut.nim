@@ -9,7 +9,7 @@ proc cut*(line: string, delimiter: string, outputDelimiter: string, fields: seq[
     outf.add fs[n]
   result = outf.join(outputDelimiter)
 
-proc ucut(delimiter=" ", outputDelimiter=" ", fields="1", files: seq[string]): int =
+proc ucut(delimiter = " ", outputDelimiter = " ", fields = "1", files: seq[string]): int =
   let fs = fields.split(",").mapIt(it.parseInt)
 
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする

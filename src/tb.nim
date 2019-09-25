@@ -38,7 +38,7 @@ proc formatAsciidoc*(rows: ref seq[seq[string]]): ref seq[string] =
     result[].add(row.mkRow)
   result[].add("|=================")
 
-proc tb(delimiter="\t", format="markdown", files: seq[string]): int =
+proc tb(delimiter = "\t", format = "markdown", files: seq[string]): int =
   ## tb converts to table (markdown or html or asciidoc).
   template formatEcho(rows: ref seq[seq[string]]) =
     let lines =
@@ -62,7 +62,7 @@ proc tb(delimiter="\t", format="markdown", files: seq[string]): int =
       rows[].add(line.split(delimiter))
     formatEcho(rows)
     return
-  
+
   # ファイルが存在するときは都度ファイルを開いて処理
   for file in files:
     var rows = new seq[seq[string]]
@@ -77,4 +77,4 @@ when isMainModule:
   import cligen
   import clitools/appinfo
   clCfg.version = version
-  dispatch(tb, help = {"format":"print format of table. (markdown | md | html | asciidoc | adoc)"})
+  dispatch(tb, help = {"format": "print format of table. (markdown | md | html | asciidoc | adoc)"})

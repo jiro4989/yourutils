@@ -46,7 +46,7 @@ proc toIPv4bin*(ip: string): string =
   for ip in ip.split("."):
     let uip = ip.parseInt.toBin(8)
     result.add $uip
-  
+
 proc toMask*(i: int): string =
   ## toMask は2進数IPアドレスのマスクを返す
   var n = i
@@ -58,7 +58,7 @@ proc toMask*(i: int): string =
   let zero = '0'.repeat(32 - n)
   result = $one & $zero
 
-proc parseCidr*(ipCidr: string): IPv4 = 
+proc parseCidr*(ipCidr: string): IPv4 =
   ## parseCIDRはIP/CIDR文字列をパースしてIPv4オブジェクトとして返す
   let ipc = ipCidr.split "/"
   let ip = ipc[0]
@@ -87,8 +87,8 @@ proc format(ipv4: IPv4, showIpAddress: bool, showCidr: bool,
   if showIpBinMask: col.add(ipv4.mask)
   result = col.join(delimiter)
 
-proc subnet(ipAddress=false, cidr=false, bin=false, mask=false,
-            color=false, delimiter="\t", header=true,
+proc subnet(ipAddress = false, cidr = false, bin = false, mask = false,
+            color = false, delimiter = "\t", header = true,
             args: seq[string]): int =
   var
     showIpAddress = ipAddress
@@ -117,27 +117,27 @@ proc subnet(ipAddress=false, cidr=false, bin=false, mask=false,
     for line in stdin.lines:
       for exIp in line.expandIp:
         let ipv4 = exIp.parseCidr
-        echo ipv4.format(showIpAddress=showIpAddress,
-                        showCidr=showCidr,
-                        showIpBin=showIpBin,
-                        showIpBinMask=showIpBinMask,
-                        useColor=color,
-                        delimiter=delimiter)
+        echo ipv4.format(showIpAddress = showIpAddress,
+                        showCidr = showCidr,
+                        showIpBin = showIpBin,
+                        showIpBinMask = showIpBinMask,
+                        useColor = color,
+                        delimiter = delimiter)
     return
 
   # 引数があればそれを入力として扱う
   for arg in args:
     for exIp in arg.expandIp:
       let ipv4 = exIp.parseCidr
-      echo ipv4.format(showIpAddress=showIpAddress,
-                      showCidr=showCidr,
-                      showIpBin=showIpBin,
-                      showIpBinMask=showIpBinMask,
-                      useColor=color,
-                      delimiter=delimiter)
+      echo ipv4.format(showIpAddress = showIpAddress,
+                      showCidr = showCidr,
+                      showIpBin = showIpBin,
+                      showIpBinMask = showIpBinMask,
+                      useColor = color,
+                      delimiter = delimiter)
 
 when isMainModule:
   import cligen
   import clitools/appinfo
   clCfg.version = version
-  dispatch(subnet, short={"color":'C', "header":'H'})
+  dispatch(subnet, short = {"color": 'C', "header": 'H'})

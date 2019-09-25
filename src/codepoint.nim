@@ -8,7 +8,7 @@ iterator genCpRow(line: string, delimiter: string): string =
       shortHex = hex.strip(trailing = false, chars = {'0'})
     yield [$ch, $codePoint, "\\U" & shortHex].join(delimiter)
 
-proc codepoint(delimiter=" ", files: seq[string]): int =
+proc codepoint(delimiter = " ", files: seq[string]): int =
   echo ["char", "code_point", "code_point(hex)"].join(delimiter)
 
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
