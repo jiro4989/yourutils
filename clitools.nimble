@@ -1,8 +1,8 @@
 # Package
 
-version       = "0.2.0"
+version       = "1.0.0"
 author        = "jiro4989"
-description   = "clitools is cli commands."
+description   = "clitools is simple cli commands."
 license       = "MIT"
 srcDir        = "src"
 binDir        = "bin"
