@@ -6,7 +6,7 @@ const
 proc renames(dryRun = false, printRename = false, whiteSpace = false,
              fromStrs: seq[string] = @[], toStr: string,
              dirs: seq[string]): int =
-  ## 指定のファイルorディレクトリ配下のファイル名の任意の文字を置換してリネームする。
+  ## Rename files or directories.
   # 一番下の階層から再帰的にリネームしてまわる。
 
   # whitespaceを使う指定があれば置換元の文字列をwhiteSpaceにする
@@ -64,4 +64,11 @@ when isMainModule:
   import cligen
   import clitools/appinfo
   clCfg.version = version
-  dispatch(renames)
+  dispatch(renames,
+           help = {
+             "whiteSpace":"replace name from white spaces to `toStr`",
+             "fromStrs":"replace name from `fromStrs` to `toStr`",
+             "toStr":"replace name from `fromStrs` to `toStr`",
+             "printRename":"print rename action when this command renames files",
+             "dryRun":"NO rename, but print rename action. You can check rename",
+             })

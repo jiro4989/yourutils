@@ -9,19 +9,7 @@ clitools is a commands.
 
 == Development
 
-nim -v
-
-  Nim Compiler Version 0.20.0 [Linux: amd64]
-  Compiled at 2019-06-06
-  Copyright (c) 2006-2019 by Andreas Rumpf
-
-  git hash: e7471cebae2a404f3e4239f199f5a0c422484aac
-  active boot switches: -d:release
-
-nimble -v
-
-  nimble v0.10.2 compiled at 2019-06-15 22:10:02
-  git hash: couldn't determine git hash
+Nim 1.0.0
 
 == Usage
 
@@ -120,6 +108,8 @@ Align texts.
 
 [source,bash]
 ----
+cat cpu.csv | aggr -d , -f 2,3
+aggr -d , -f 2,3 cpu.csv mem.csv
 ----
 
 === subnet
@@ -169,6 +159,24 @@ $ paste -d , <(seq 5) <(seq 6 10) <(seq 11 15) | tb -d , -f adoc
 |5|10|15
 |=================
 ```
+
+=== renames
+
+Rename files and directories recursively.
+You can try `dry-run`.
+
+[source,bash]
+----
+# Dry run is `--dry-run` or `-d`
+$ renames --dry-run -f " " -t "_" target_dir
+$ renames -d -f " " -t "_" target_dir
+
+# Rename white spaces is `--white-space` or `-w`
+$ renames -w -t "_" target_dir
+
+# You can set multiple `--from-strs` or `-f`
+$ renames -f a -f b -f c -t "_" target_dir
+----
 
 == Install
 
