@@ -25,7 +25,11 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
     let kindStr =
       if kind == pcFile: "[ File ]"
       else: "[ Dir  ]"
-    styledEcho fgBlack, kindCol, kindStr, resetStyle, " ", path, " -> ", fgGreen, newPath, resetStyle
+
+    if path != newPath:
+      styledEcho fgBlack, kindCol, kindStr, resetStyle, " ", path, " -> ", fgGreen, newPath, resetStyle
+    else:
+      styledEcho fgBlack, kindCol, kindStr, resetStyle, " ", "NO CHANGE ", path
 
   template runRename(kind: PathComponent, path, newPath: string) =
     if dryRun:
