@@ -2,6 +2,10 @@ import os, strutils, terminal
 
 const
   whiteSpaces = @[" ", "　", "\t"]
+  version = """renames version 1.0.0
+Copyright (c) 2019 jiro4989
+Released under the MIT License.
+https://github.com/jiro4989/clitools"""
 
 proc renames(dryRun = false, printRename = false, whiteSpace = false,
              fromStrs: seq[string] = @[], toStr: string,
@@ -39,14 +43,17 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
         printMsg(kind, path, newPath)
       moveFile(path, newPath)
 
+  proc getReplaceName(path: string): string =
+    let (dir, name, ext) = splitFile(path)
+    let base = name & ext
+    var newBase = base
+    for subs in fromStrs2:
+      newBase = newBase.replace(subs, toStr)
+    result = dir / newBase
+
   proc rename(dir: string) =
     for kind, path in walkDir(dir):
-      let (dir, name, ext) = splitFile(path)
-      let base = name & ext
-      var newBase = base
-      for subs in fromStrs2:
-        newBase = newBase.replace(subs, toStr)
-      let newPath = dir / newBase
+      let newPath = getReplaceName(path)
 
       case kind
       of pcDir:
@@ -59,10 +66,10 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
 
   for dir in dirs:
     rename(dir)
+    runRename(pcDir, dir, getReplaceName(dir))
 
 when isMainModule:
   import cligen
-  import clitools/appinfo
   clCfg.version = version
   dispatch(renames,
            help = {
