@@ -2,6 +2,12 @@ import strutils
 from sequtils import map
 from algorithm import sort
 
+const
+  version = """aggr version 1.0.0
+Copyright (c) 2019 jiro4989
+Released under the MIT License.
+https://github.com/jiro4989/clitools"""
+
 proc percentile(datas: openArray[int], percent: int): int =
   ## datas はソート済みでなければならない。
   var pos = int((datas.len + 1) * percent / 100)
@@ -53,6 +59,5 @@ proc aggr(nofilename=false, count=false, min=false, max=false, sum=false,
 
 when isMainModule:
   import cligen
-  import clitools/appinfo
   clCfg.version = version
   dispatch(aggr, short = {"outDelimiter":'D'})
