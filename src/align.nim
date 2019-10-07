@@ -5,6 +5,12 @@ import clitools/io
 import sequtils
 from strutils import join
 
+const
+  version = """align version 1.0.0
+Copyright (c) 2019 jiro4989
+Released under the MIT License.
+https://github.com/jiro4989/clitools"""
+
 proc left(length = 0, pad = " ", writeFile = false, files: seq[string]): int =
   # 引数（ファイル）の指定がなければ標準入力を処理対象にする
   if files.len < 1:
@@ -67,7 +73,6 @@ proc right(length = 0, pad = " ", writeFile = false, files: seq[string]): int =
 
 when isMainModule:
   import cligen
-  import clitools/appinfo
   clCfg.version = version
   dispatchMulti([left, short = {"length": 'n'}],
                 [center, short = {"length": 'n'}],

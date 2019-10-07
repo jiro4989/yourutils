@@ -1,5 +1,11 @@
 import sequtils, strutils
 
+const
+  version = """rep version 1.0.0
+Copyright (c) 2019 jiro4989
+Released under the MIT License.
+https://github.com/jiro4989/clitools"""
+
 proc repeatString*(word: string, repeatCounts: openArray[int],
     delimiter: string): seq[string] =
   if repeatCounts.len < 1: return
@@ -31,6 +37,5 @@ proc rep(delimiter = "", useStdin = false, args: seq[string]): int =
 
 when isMainModule:
   import cligen
-  import clitools/appinfo
   clCfg.version = version
   dispatch(rep, short = {"useStdin": 'i'})

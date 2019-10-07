@@ -1,6 +1,12 @@
 import strutils, strformat
 from sequtils import mapIt
 
+const
+  version = """aggr version 1.0.0
+Copyright (c) 2019 jiro4989
+Released under the MIT License.
+https://github.com/jiro4989/clitools"""
+
 proc formatMarkdown*(rows: ref seq[seq[string]]): ref seq[string] =
   new result
   proc mdRow(cols: seq[string]): string = "|" & cols.join("|") & "|"
@@ -75,6 +81,5 @@ proc tb(delimiter = "\t", format = "markdown", files: seq[string]): int =
 
 when isMainModule:
   import cligen
-  import clitools/appinfo
   clCfg.version = version
   dispatch(tb, help = {"format": "print format of table. (markdown | md | html | asciidoc | adoc)"})

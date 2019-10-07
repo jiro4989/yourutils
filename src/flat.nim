@@ -2,6 +2,12 @@ import clitools/io
 
 import strutils
 
+const
+  version = """flat version 1.0.0
+Copyright (c) 2019 jiro4989
+Released under the MIT License.
+https://github.com/jiro4989/clitools"""
+
 proc joinLines*(lines: openArray[string], columnCount: int,
     delimiter: string): seq[string] =
   ## 行のデータをcolumnCountずつ１行にまとめる
@@ -30,6 +36,5 @@ proc flat(columnCount = 0, delimiter = " ", files: seq[string]): int =
 
 when isMainModule:
   import cligen
-  import clitools/appinfo
   clCfg.version = version
   dispatch(flat, short = {"columnCount": 'n'})

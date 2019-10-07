@@ -1,5 +1,11 @@
 import strutils, sequtils
 
+const
+  version = """ucut version 1.0.0
+Copyright (c) 2019 jiro4989
+Released under the MIT License.
+https://github.com/jiro4989/clitools"""
+
 proc cut*(line: string, delimiter: string, outputDelimiter: string, fields: seq[int]): string =
   let fs = line.split(delimiter)
   var outf: seq[string]
@@ -24,6 +30,5 @@ proc ucut(delimiter = " ", outputDelimiter = " ", fields = "1", files: seq[strin
 
 when isMainModule:
   import cligen
-  import clitools/appinfo
   clCfg.version = version
   dispatch(ucut, short = {"outputDelimiter": 'D'})
