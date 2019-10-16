@@ -8,7 +8,7 @@ srcDir        = "src"
 binDir        = "bin"
 bin           = @["flat", "rep", "align", "ucut",
                   "codepoint", "tb", "subnet", "aggr",
-                  "renames", "tiff"]
+                  "renames", "tiff", "jsonfmt"]
 
 
 # Dependencies
