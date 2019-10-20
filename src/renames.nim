@@ -9,7 +9,7 @@ https://github.com/jiro4989/clitools"""
 
 proc renames(dryRun = false, printRename = false, whiteSpace = false,
              fromStrs: seq[string] = @[], toStr = "",
-             lower = false, upper = false,
+             lower = false, upper = false, deleteStrs: seq[string] = @[],
              dirs: seq[string]): int =
   ## Rename files or directories.
   ## 一番下の階層から再帰的にリネームしてまわる。
@@ -20,7 +20,7 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
     fromStrs2 = whiteSpaces
 
   # fromStrsとtoStrは必須なのでチェック
-  if not lower and not upper and (fromStrs2.len < 1 or toStr.len < 1):
+  if not lower and not upper and deleteStrs.len < 1 and (fromStrs2.len < 1 or toStr.len < 1):
     stderr.writeLine "[ ERR ] must need fromStrs and toStr"
     stderr.writeLine "[ ERR ] see help"
     return 1
@@ -50,11 +50,16 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
     let (dir, name, ext) = splitFile(path)
     let base = name & ext
     var newBase = base
+
     # 大文字小文字変換があればそれだけやる
     if lower:
       newBase = toLowerAscii(newBase)
     elif upper:
       newBase = toUpperAscii(newBase)
+    elif 1 <= deleteStrs.len:
+      # 削除文字があれば削除だけ
+      for s in deleteStrs:
+        newBase = newBase.replace(s, "")
     else:
       # どちらもなければ、置換文字を使う
       for subs in fromStrs2:
@@ -82,6 +87,7 @@ when isMainModule:
   import cligen
   clCfg.version = version
   dispatch(renames,
+           short = {"deleteStrs":'D'},
            help = {
              "whiteSpace":"replace name from white spaces to `toStr`",
              "fromStrs":"replace name from `fromStrs` to `toStr`",
