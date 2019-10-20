@@ -2,30 +2,33 @@ import os, strutils, terminal
 
 const
   whiteSpaces = @[" ", "　", "\t"]
-  version = """renames version 1.0.0
+  version = """renames version 1.1.0
 Copyright (c) 2019 jiro4989
 Released under the MIT License.
 https://github.com/jiro4989/clitools"""
 
 proc renames(dryRun = false, printRename = false, whiteSpace = false,
-             fromStrs: seq[string] = @[], toStr: string,
+             fromStrs: seq[string] = @[], toStr = "",
+             lower = false, upper = false, deleteStrs: seq[string] = @[],
              dirs: seq[string]): int =
   ## Rename files or directories.
-  # 一番下の階層から再帰的にリネームしてまわる。
+  ## 一番下の階層から再帰的にリネームしてまわる。
 
   # whitespaceを使う指定があれば置換元の文字列をwhiteSpaceにする
   var fromStrs2 = fromStrs
   if whiteSpace:
     fromStrs2 = whiteSpaces
 
-  if fromStrs2.len < 1 or toStr.len < 1:
+  # fromStrsとtoStrは必須なのでチェック
+  if not lower and not upper and deleteStrs.len < 1 and (fromStrs2.len < 1 or toStr.len < 1):
+    stderr.writeLine "[ ERR ] must need fromStrs and toStr"
     stderr.writeLine "[ ERR ] see help"
     return 1
 
   template printMsg(kind: PathComponent, path, newPath: string) =
     let kindCol =
-      if kind == pcFile: bgYellow
-      else: bgBlue
+      if kind == pcFile: fgYellow
+      else: fgBlue
     let kindStr =
       if kind == pcFile: "[ File ]"
       else: "[ Dir  ]"
@@ -47,8 +50,20 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
     let (dir, name, ext) = splitFile(path)
     let base = name & ext
     var newBase = base
-    for subs in fromStrs2:
-      newBase = newBase.replace(subs, toStr)
+
+    # 大文字小文字変換があればそれだけやる
+    if lower:
+      newBase = toLowerAscii(newBase)
+    elif upper:
+      newBase = toUpperAscii(newBase)
+    elif 1 <= deleteStrs.len:
+      # 削除文字があれば削除だけ
+      for s in deleteStrs:
+        newBase = newBase.replace(s, "")
+    else:
+      # どちらもなければ、置換文字を使う
+      for subs in fromStrs2:
+        newBase = newBase.replace(subs, toStr)
     result = dir / newBase
 
   proc rename(dir: string) =
@@ -72,6 +87,7 @@ when isMainModule:
   import cligen
   clCfg.version = version
   dispatch(renames,
+           short = {"deleteStrs":'D'},
            help = {
              "whiteSpace":"replace name from white spaces to `toStr`",
              "fromStrs":"replace name from `fromStrs` to `toStr`",
