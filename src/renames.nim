@@ -2,16 +2,17 @@ import os, strutils, terminal
 
 const
   whiteSpaces = @[" ", "　", "\t"]
-  version = """renames version 1.0.0
+  version = """renames version 1.1.0
 Copyright (c) 2019 jiro4989
 Released under the MIT License.
 https://github.com/jiro4989/clitools"""
 
 proc renames(dryRun = false, printRename = false, whiteSpace = false,
-             fromStrs: seq[string] = @[], toStr: string,
+             fromStrs: seq[string] = @[], toStr = "",
+             lower = false, upper = false,
              dirs: seq[string]): int =
   ## Rename files or directories.
-  # 一番下の階層から再帰的にリネームしてまわる。
+  ## 一番下の階層から再帰的にリネームしてまわる。
 
   # whitespaceを使う指定があれば置換元の文字列をwhiteSpaceにする
   var fromStrs2 = fromStrs
@@ -19,7 +20,7 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
     fromStrs2 = whiteSpaces
 
   # fromStrsとtoStrは必須なのでチェック
-  if fromStrs2.len < 1 or toStr.len < 1:
+  if not lower and not upper and (fromStrs2.len < 1 or toStr.len < 1):
     stderr.writeLine "[ ERR ] must need fromStrs and toStr"
     stderr.writeLine "[ ERR ] see help"
     return 1
@@ -49,8 +50,15 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
     let (dir, name, ext) = splitFile(path)
     let base = name & ext
     var newBase = base
-    for subs in fromStrs2:
-      newBase = newBase.replace(subs, toStr)
+    # 大文字小文字変換があればそれだけやる
+    if lower:
+      newBase = toLowerAscii(newBase)
+    elif upper:
+      newBase = toUpperAscii(newBase)
+    else:
+      # どちらもなければ、置換文字を使う
+      for subs in fromStrs2:
+        newBase = newBase.replace(subs, toStr)
     result = dir / newBase
 
   proc rename(dir: string) =
