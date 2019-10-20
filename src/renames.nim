@@ -18,14 +18,16 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
   if whiteSpace:
     fromStrs2 = whiteSpaces
 
+  # fromStrsとtoStrは必須なのでチェック
   if fromStrs2.len < 1 or toStr.len < 1:
+    stderr.writeLine "[ ERR ] must need fromStrs and toStr"
     stderr.writeLine "[ ERR ] see help"
     return 1
 
   template printMsg(kind: PathComponent, path, newPath: string) =
     let kindCol =
-      if kind == pcFile: bgYellow
-      else: bgBlue
+      if kind == pcFile: fgYellow
+      else: fgBlue
     let kindStr =
       if kind == pcFile: "[ File ]"
       else: "[ Dir  ]"
