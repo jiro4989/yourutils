@@ -8,7 +8,7 @@ srcDir        = "src"
 binDir        = "bin"
 bin           = @["flat", "rep", "align", "ucut",
                   "codepoint", "tb", "subnet", "aggr",
-                  "renames", "tiff", "jsonfmt"]
+                  "renames", "tiff", "jsonfmt", "zshprompt"]
 
 
 # Dependencies
@@ -18,6 +18,7 @@ requires "eastasianwidth >= 1.1.0"
 requires "alignment >= 1.1.0"
 requires "argparse >= 0.7.1"
 requires "cligen >= 0.9.32"
+requires "nicy"
 
 import strformat
 
