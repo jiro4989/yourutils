@@ -46,7 +46,8 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
     else:
       if printRename:
         printMsg(kind, path, newPath)
-      moveFile(path, newPath)
+      if path != newPath:
+        moveFile(path, newPath)
 
   proc getReplaceName(path: string): string =
     let (dir, name, ext) = splitFile(path)
