@@ -180,6 +180,33 @@ $ renames -w -t "_" target_dir
 $ renames -f a -f b -f c -t "_" target_dir
 ----
 
+=== zshprompt
+
+Zsh prompt.
+
+Prompt is here.
+
+[source,bash]
+----
+17:42:12 jiro4989@jiro4989-pc ~/src/github.com/jiro4989/clitools master •
+(;^q^)? ›
+----
+
+And settings of `.zshrc` .
+
+[source,bash]
+----
+readonly __ZSH_PROMPT_CMD="$HOME/.nimble/bin/zshprompt"
+
+autoload -Uz add-zsh-hook
+_nicy_prompt() {
+  if type "$__ZSH_PROMPT_CMD" >& /dev/null; then
+    PROMPT=$("$__ZSH_PROMPT_CMD")
+  fi
+}
+add-zsh-hook precmd _nicy_prompt
+----
+
 == Install
 
 [source,bash]
