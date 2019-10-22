@@ -27,6 +27,7 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
     stderr.writeLine "[ ERR ] see help"
     return 1
 
+  # 変更対象のファイル件数
   var changeFileCount: int
   template printMsg(kind: PathComponent, path, newPath: string) =
     let kindCol =
@@ -43,8 +44,8 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
       if not filter:
         styledEcho fgBlack, kindCol, kindStr, resetStyle, " ", "NO CHANGE ", path
 
-  var fileCount: int
-  var changedFileCount: int
+  var fileCount: int        # 走査した全てのファイル件数
+  var changedFileCount: int # 実際に変更したファイル件数
   template runRename(kind: PathComponent, path, newPath: string) =
     inc(fileCount)
     if dryRun:
