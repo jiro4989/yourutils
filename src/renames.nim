@@ -2,7 +2,7 @@ import os, strutils, terminal
 
 const
   whiteSpaces = @[" ", "　", "\t"]
-  version = """renames version 1.1.0
+  version = """renames version 1.2.0
 Copyright (c) 2019 jiro4989
 Released under the MIT License.
 https://github.com/jiro4989/clitools"""
@@ -10,6 +10,7 @@ https://github.com/jiro4989/clitools"""
 proc renames(dryRun = false, printRename = false, whiteSpace = false,
              fromStrs: seq[string] = @[], toStr = "",
              lower = false, upper = false, deleteStrs: seq[string] = @[],
+             filter = false,
              dirs: seq[string]): int =
   ## Rename files or directories.
   ## 一番下の階層から再帰的にリネームしてまわる。
@@ -36,7 +37,8 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
     if path != newPath:
       styledEcho fgBlack, kindCol, kindStr, resetStyle, " ", path, " -> ", fgGreen, newPath, resetStyle
     else:
-      styledEcho fgBlack, kindCol, kindStr, resetStyle, " ", "NO CHANGE ", path
+      if not filter:
+        styledEcho fgBlack, kindCol, kindStr, resetStyle, " ", "NO CHANGE ", path
 
   template runRename(kind: PathComponent, path, newPath: string) =
     if dryRun:
@@ -87,11 +89,12 @@ when isMainModule:
   import cligen
   clCfg.version = version
   dispatch(renames,
-           short = {"deleteStrs":'D'},
+           short = {"deleteStrs":'D', "filter":'F'},
            help = {
              "whiteSpace":"replace name from white spaces to `toStr`",
              "fromStrs":"replace name from `fromStrs` to `toStr`",
              "toStr":"replace name from `fromStrs` to `toStr`",
              "printRename":"print rename action when this command renames files",
              "dryRun":"NO rename, but print rename action. You can check rename",
+             "filter":"filtering no change files",
              })
