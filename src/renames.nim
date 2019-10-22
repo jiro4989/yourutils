@@ -1,4 +1,5 @@
 import os, strutils, terminal
+from strformat import `&`
 
 const
   whiteSpaces = @[" ", "　", "\t"]
@@ -26,6 +27,7 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
     stderr.writeLine "[ ERR ] see help"
     return 1
 
+  var changeFileCount: int
   template printMsg(kind: PathComponent, path, newPath: string) =
     let kindCol =
       if kind == pcFile: fgYellow
@@ -35,18 +37,23 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
       else: "[ Dir  ]"
 
     if path != newPath:
+      inc(changeFileCount)
       styledEcho fgBlack, kindCol, kindStr, resetStyle, " ", path, " -> ", fgGreen, newPath, resetStyle
     else:
       if not filter:
         styledEcho fgBlack, kindCol, kindStr, resetStyle, " ", "NO CHANGE ", path
 
+  var fileCount: int
+  var changedFileCount: int
   template runRename(kind: PathComponent, path, newPath: string) =
+    inc(fileCount)
     if dryRun:
       printMsg(kind, path, newPath)
     else:
       if printRename:
         printMsg(kind, path, newPath)
       if path != newPath:
+        inc(changedFileCount)
         moveFile(path, newPath)
 
   proc getReplaceName(path: string): string =
@@ -85,6 +92,9 @@ proc renames(dryRun = false, printRename = false, whiteSpace = false,
   for dir in dirs:
     rename(dir)
     runRename(pcDir, dir, getReplaceName(dir))
+
+  echo ""
+  echo &"{fileCount} files, {changeFileCount} changes files, {changedFileCount} files changed"
 
 when isMainModule:
   import cligen
