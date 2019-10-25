@@ -207,6 +207,44 @@ _nicy_prompt() {
 add-zsh-hook precmd _nicy_prompt
 ----
 
+=== tiff
+
+Time diff.
+
+[source,bash]
+----
+$ tiff 19:00 18:00
+3600 seconds
+
+$ tiff 19:00 18:00 -H
+1 hours
+
+$ tiff 19:00 18:00 -M
+60 minutes
+----
+
+=== jsonfmt
+
+Format json from stdin.
+
+[source,bash]
+----
+$ echo '{"a":1, "b":true, "c":[1, 2, 3], "d":{"a":1, "b":"test"}}' | jsonfmt
+{
+  "a": 1,
+  "b": true,
+  "c": [
+    1,
+    2,
+    3
+  ],
+  "d": {
+    "a": 1,
+    "b": "test"
+  }
+}
+----
+
 == Install
 
 [source,bash]
