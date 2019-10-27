@@ -170,14 +170,22 @@ You can try `dry-run`.
 [source,bash]
 ----
 # Dry run is `--dry-run` or `-d`
-$ renames --dry-run -f " " -t "_" target_dir
-$ renames -d -f " " -t "_" target_dir
-
-# Rename white spaces is `--white-space` or `-w`
-$ renames -w -t "_" target_dir
-
+$ renames replace --dry-run -t _ target_dir
+$ renames replace -d -t _ target_dir
 # You can set multiple `--from-strs` or `-f`
-$ renames -f a -f b -f c -t "_" target_dir
+$ renames replace -f a -f b -f c -t "_" target_dir
+
+# Delete whitespace
+$ renames delete target_dir
+# Print remaming
+$ renames delete -p target_dir
+
+# To lower
+$ renames lower target_dir
+
+# To upper
+$ renames upper target_dir
+
 ----
 
 === zshprompt
