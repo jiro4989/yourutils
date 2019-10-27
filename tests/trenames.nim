@@ -24,28 +24,28 @@ suite "proc runMoveFile":
   test "same dir":
     let targetDir = dir / "dir1"
     createDir(targetDir)
-    runMoveFile(pcDir, targetDir, targetDir, false, false, false)
+    runMoveFile(pcDir, targetDir, targetDir, false, false, true)
     check existsDir(targetDir)
 
   test "new dir":
     let targetDir = dir / "dir1"
     let newDir = targetDir & "_2"
     createDir(targetDir)
-    runMoveFile(pcDir, targetDir, newDir, false, false, false)
+    runMoveFile(pcDir, targetDir, newDir, false, false, true)
     check not existsDir(targetDir)
     check existsDir(newDir)
 
   test "same file":
     let targetFile = dir / "file1"
     writeFile(targetFile, "1234")
-    runMoveFile(pcFile, targetFile, targetFile, false, false, false)
+    runMoveFile(pcFile, targetFile, targetFile, false, false, true)
     check existsFile(targetFile)
 
   test "new file":
     let targetFile = dir / "file1"
     let newFile = targetFile & "_2"
     writeFile(targetFile, "1234")
-    runMoveFile(pcFile, targetFile, newFile, false, false, false)
+    runMoveFile(pcFile, targetFile, newFile, false, false, true)
     check not existsFile(targetFile)
     check existsFile(newFile)
 
@@ -73,7 +73,7 @@ suite "proc rename":
     let targetFile3 = dir3 / "file3"
     writeFile(targetFile3, "1234")
 
-    rename(dir2, getUpperName, false, false, false)
+    rename(dir2, getUpperName, false, true, false)
 
     check not existsFile(targetFile)
     check not existsFile(targetFile2)
@@ -108,7 +108,7 @@ suite "proc renameDirs":
     let targetFile3 = dir3 / "file3"
     writeFile(targetFile3, "1234")
 
-    renameDirs(@[dir2], getUpperName, false, false, false)
+    renameDirs(@[dir2], getUpperName, false, true, false)
 
     check not existsFile(targetFile)
     check not existsFile(targetFile2)

@@ -33,7 +33,7 @@ template printMsg(kind: PathComponent, path, newPath: string, filter: bool) =
       styledEcho fgBlack, kindCol, kindStr, resetStyle, " ", "NO CHANGE ", path
 
 proc runMoveFile(kind: PathComponent, path, newPath: string,
-                 dryRun, filter, printRename: bool) =
+                 dryRun, printRename, filter: bool) =
   inc(fileCount)
   if dryRun:
     printMsg(kind, path, newPath, filter)
@@ -46,27 +46,27 @@ proc runMoveFile(kind: PathComponent, path, newPath: string,
     moveFile(path, newPath)
 
 proc rename(dir: string, newPathProc: proc (path: string): string,
-            dryRun, filter, printRename: bool) =
+            dryRun, printRename, filter: bool) =
   for kind, path in walkDir(dir):
     let newPath = newPathProc(path)
 
     case kind
     of pcDir:
       rename(path, newPathProc,
-             dryRun = dryRun, filter = filter, printRename = printRename)
+             dryRun = dryRun, printRename = printRename, filter = filter)
       runMoveFile(kind, path, newPath,
-                  dryRun = dryRun, filter = filter, printRename = printRename)
+                  dryRun = dryRun, printRename = printRename, filter = filter)
     of pcFile:
       runMoveFile(kind, path, newPath,
-                  dryRun = dryRun, filter = filter, printRename = printRename)
+                  dryRun = dryRun, printRename = printRename, filter = filter)
     else:
       discard
 
 proc renameDirs(dirs: seq[string], f: proc (path: string): string,
                     dryRun, printRename, filter: bool) =
   for dir in dirs:
-    rename(dir, f, dryRun = dryRun, filter = filter, printRename = printRename)
-    runMoveFile(pcDir, dir, f(dir), dryRun = dryRun, filter = filter, printRename = printRename)
+    rename(dir, f, dryRun = dryRun, printRename = printRename, filter = filter)
+    runMoveFile(pcDir, dir, f(dir), dryRun = dryRun, printRename = printRename, filter = filter)
 
 proc cmdDelete(dryRun = false, printRename = false, filter = false,
             fromStrs: seq[string] = whiteSpaces,
@@ -80,7 +80,7 @@ proc cmdDelete(dryRun = false, printRename = false, filter = false,
       newBase = newBase.replace(s, "")
     result = dir / newBase
 
-  renameDirs(dirs, getRemovedName, dryRun = dryRun, filter = filter, printRename = printRename)
+  renameDirs(dirs, getRemovedName, dryRun = dryRun, printRename = printRename, filter = filter)
   printResult()
 
 proc cmdReplace(dryRun = false, printRename = false, filter = false,
@@ -95,7 +95,7 @@ proc cmdReplace(dryRun = false, printRename = false, filter = false,
       newBase = newBase.replace(s, toStr)
     result = dir / newBase
 
-  renameDirs(dirs, getReplaceName, dryRun = dryRun, filter = filter, printRename = printRename)
+  renameDirs(dirs, getReplaceName, dryRun = dryRun, printRename = printRename, filter = filter)
   printResult()
 
 proc cmdLower(dryRun = false, printRename = false, filter = false,
@@ -105,7 +105,7 @@ proc cmdLower(dryRun = false, printRename = false, filter = false,
     let base = name & ext
     result = dir / toLowerAscii(base)
 
-  renameDirs(dirs, getLowerName, dryRun = dryRun, filter = filter, printRename = printRename)
+  renameDirs(dirs, getLowerName, dryRun = dryRun, printRename = printRename, filter = filter)
   printResult()
 
 proc cmdUpper(dryRun = false, printRename = false, filter = false,
@@ -115,7 +115,7 @@ proc cmdUpper(dryRun = false, printRename = false, filter = false,
     let base = name & ext
     result = dir / toUpperAscii(base)
 
-  renameDirs(dirs, getUpperName, dryRun = dryRun, filter = filter, printRename = printRename)
+  renameDirs(dirs, getUpperName, dryRun = dryRun, printRename = printRename, filter = filter)
   printResult()
 
 when isMainModule and not defined(isTesting):
