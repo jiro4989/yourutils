@@ -135,3 +135,70 @@ suite "cmdDelete":
     check existsFile(dir2 / "abcd.txt")
     check not existsFile(f)
     check existsDir(dir2)
+
+  test "delete strings":
+    let f = dir2 / "a-bXcZd.txt"
+    writeFile(f, "1234")
+    check 0 == cmdDelete(false, true, false, @["-", "X", "Z"], @[dir2])
+    check existsFile(dir2 / "abcd.txt")
+    check not existsFile(f)
+    check existsDir(dir2)
+
+suite "cmdReplace":
+  setup:
+    let dir = "tests/replace"
+    createDir(dir)
+    let dir2 = dir / "tmp"
+    createDir(dir2)
+  teardown:
+    removeDir(dir)
+
+  test "replace whitespace":
+    let f = dir2 / "a b　d.txt"
+    writeFile(f, "1234")
+    check 0 == cmdReplace(false, true, false, whiteSpaces, "_", @[dir2])
+    check existsFile(dir2 / "a_b_d.txt")
+    check not existsFile(f)
+    check existsDir(dir2)
+
+  test "replace any strings":
+    let f = dir2 / "abcd----XXXXZZZZ.txt"
+    writeFile(f, "1234")
+    check 0 == cmdReplace(false, true, false, @["-", "X", "Z"], "_", @[dir2])
+    check existsFile(dir2 / "abcd____________.txt")
+    check not existsFile(f)
+    check existsDir(dir2)
+
+suite "cmdLower":
+  setup:
+    let dir = "tests/lower"
+    createDir(dir)
+    let dir2 = dir / "TMP"
+    createDir(dir2)
+  teardown:
+    removeDir(dir)
+
+  test "rename to lower":
+    let f = dir2 / "ABCD.txt"
+    writeFile(f, "1234")
+    check 0 == cmdLower(false, true, false, @[dir2])
+    check existsFile(dir / "tmp" / "abcd.txt")
+    check not existsFile(f)
+    check existsDir(dir / "tmp")
+
+suite "cmdUpper":
+  setup:
+    let dir = "tests/lower"
+    createDir(dir)
+    let dir2 = dir / "tmp"
+    createDir(dir2)
+  teardown:
+    removeDir(dir)
+
+  test "rename to upper":
+    let f = dir2 / "abcd.txt"
+    writeFile(f, "1234")
+    check 0 == cmdUpper(false, true, false, @[dir2])
+    check existsFile(dir / "TMP" / "ABCD.TXT")
+    check not existsFile(f)
+    check existsDir(dir / "TMP")
