@@ -119,3 +119,19 @@ suite "proc renameDirs":
     check not existsDir(dir2)
     check not existsDir(dir3)
 
+suite "cmdDelete":
+  setup:
+    let dir = "tests/delete"
+    createDir(dir)
+    let dir2 = dir / "tmp"
+    createDir(dir2)
+  teardown:
+    removeDir(dir)
+
+  test "delete whitespace":
+    let f = dir2 / "a b　c\td.txt"
+    writeFile(f, "1234")
+    check 0 == cmdDelete(false, false, false, whiteSpaces, @[dir2])
+    check existsFile(dir2 / "abcd.txt")
+    check not existsFile(f)
+    check existsDir(dir2)
