@@ -23,14 +23,14 @@ suite "proc runMoveFile":
 
   test "same dir":
     let targetDir = dir / "dir1"
-    createDir(dir)
+    createDir(targetDir)
     runMoveFile(pcDir, targetDir, targetDir, false, false, false)
     check existsDir(targetDir)
 
   test "new dir":
     let targetDir = dir / "dir1"
     let newDir = targetDir & "_2"
-    createDir(dir)
+    createDir(targetDir)
     runMoveFile(pcDir, targetDir, newDir, false, false, false)
     check not existsDir(targetDir)
     check existsDir(newDir)

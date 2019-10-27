@@ -118,7 +118,7 @@ proc cmdUpper(dryRun = false, printRename = false, filter = false,
   renameDirs(dirs, getUpperName, dryRun = dryRun, filter = filter, printRename = printRename)
   printResult()
 
-when isMainModule:
+when isMainModule and not defined(isTesting):
   import cligen
   clCfg.version = version
 
