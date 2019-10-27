@@ -62,7 +62,7 @@ proc rename(dir: string, newPathProc: proc (path: string): string,
     else:
       discard
 
-template renameDirs(dirs: seq[string], f: proc (path: string): string,
+proc renameDirs(dirs: seq[string], f: proc (path: string): string,
                     dryRun, printRename, filter: bool) =
   for dir in dirs:
     rename(dir, f, dryRun = dryRun, filter = filter, printRename = printRename)
