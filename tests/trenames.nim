@@ -49,6 +49,11 @@ suite "proc runMoveFile":
     check not existsFile(targetFile)
     check existsFile(newFile)
 
+proc newPath1(path: string): string =
+  let (dir, name, ext) = splitFile(path)
+  let base = name & ext
+  result = dir / base & ".1"
+
 suite "proc rename":
   setup:
     let dir = "tests/tmp_rename"
@@ -58,10 +63,6 @@ suite "proc rename":
     let dir3 = "tests/tmp_rename/abcd/xyz"
     createDir(dir3)
 
-    proc getUpperName(path: string): string =
-      let (dir, name, ext) = splitFile(path)
-      let base = name & ext
-      result = dir / toUpperAscii(base)
   teardown:
     removeDir(dir)
 
@@ -73,16 +74,16 @@ suite "proc rename":
     let targetFile3 = dir3 / "file3"
     writeFile(targetFile3, "1234")
 
-    rename(dir2, getUpperName, false, true, false)
+    rename(dir2, newPath1, false, true, false)
 
     check not existsFile(targetFile)
     check not existsFile(targetFile2)
     check not existsFile(targetFile3)
-    check existsFile(dir2 / "FILE1")
-    check existsFile(dir2 / "FILE2")
-    check existsFile(dir2 / "XYZ" / "FILE3")
+    check existsFile(dir2 / "file1.1")
+    check existsFile(dir2 / "file2.1")
+    check existsFile(dir2 / "xyz.1" / "file3.1")
     check existsDir(dir2)
-    check existsDir(dir2 / "XYZ")
+    check existsDir(dir2 / "xyz.1")
 
 suite "proc renameDirs":
   setup:
@@ -92,11 +93,6 @@ suite "proc renameDirs":
     createDir(dir2)
     let dir3 = "tests/tmp_rename/abcd/xyz"
     createDir(dir3)
-
-    proc getUpperName(path: string): string =
-      let (dir, name, ext) = splitFile(path)
-      let base = name & ext
-      result = dir / toUpperAscii(base)
   teardown:
     removeDir(dir)
 
@@ -108,14 +104,14 @@ suite "proc renameDirs":
     let targetFile3 = dir3 / "file3"
     writeFile(targetFile3, "1234")
 
-    renameDirs(@[dir2], getUpperName, false, true, false)
+    renameDirs(@[dir2], newPath1, false, true, false)
 
     check not existsFile(targetFile)
     check not existsFile(targetFile2)
     check not existsFile(targetFile3)
-    check existsFile(dir / "ABCD" / "FILE1")
-    check existsFile(dir / "ABCD" / "FILE2")
-    check existsFile(dir / "ABCD" / "XYZ" / "FILE3")
+    check existsFile(dir / "abcd.1" / "file1.1")
+    check existsFile(dir / "abcd.1" / "file2.1")
+    check existsFile(dir / "abcd.1" / "xyz.1" / "file3.1")
     check not existsDir(dir2)
     check not existsDir(dir3)
 
@@ -183,7 +179,11 @@ suite "cmdLower":
     writeFile(f, "1234")
     check 0 == cmdLower(false, true, false, @[dir2])
     check existsFile(dir / "tmp" / "abcd.txt")
-    check not existsFile(f)
+    when hostOS == "windows" or hostOS == "macosx":
+      # Windows, MacOSXは大文字・小文字を区別しない
+      check existsFile(f)
+    else:
+      check not existsFile(f)
     check existsDir(dir / "tmp")
 
 suite "cmdUpper":
@@ -200,5 +200,9 @@ suite "cmdUpper":
     writeFile(f, "1234")
     check 0 == cmdUpper(false, true, false, @[dir2])
     check existsFile(dir / "TMP" / "ABCD.TXT")
-    check not existsFile(f)
+    when hostOS == "windows" or hostOS == "macosx":
+      # Windows, MacOSXは大文字・小文字を区別しない
+      check existsFile(f)
+    else:
+      check not existsFile(f)
     check existsDir(dir / "TMP")
