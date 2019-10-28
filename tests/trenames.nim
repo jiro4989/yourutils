@@ -125,7 +125,7 @@ suite "cmdDelete":
     removeDir(dir)
 
   test "delete whitespace":
-    let f = dir2 / "a b　c\td.txt"
+    let f = dir2 / "a b　c d.txt"
     writeFile(f, "1234")
     check 0 == cmdDelete(false, false, false, whiteSpaces, @[dir2])
     check existsFile(dir2 / "abcd.txt")
