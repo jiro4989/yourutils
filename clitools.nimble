@@ -19,7 +19,7 @@ requires "alignment >= 1.1.0"
 requires "argparse >= 0.7.1"
 requires "cligen >= 0.9.32"
 when not defined(windows):
-  requires "nicy >= 2.5.1"
+  requires "nicy#head"
 
 import strformat
 
