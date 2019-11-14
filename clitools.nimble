@@ -18,7 +18,8 @@ requires "eastasianwidth >= 1.1.0"
 requires "alignment >= 1.1.0"
 requires "argparse >= 0.7.1"
 requires "cligen >= 0.9.32"
-requires "nicy >= 2.5.1"
+when not defined(windows):
+  requires "nicy >= 2.5.1"
 
 import strformat
 
