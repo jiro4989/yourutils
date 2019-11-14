@@ -4,7 +4,7 @@
 
 image:https://travis-ci.org/jiro4989/clitools.svg?branch=master["Build Status", link="https://travis-ci.org/jiro4989/clitools"]
 image:https://ci.appveyor.com/api/projects/status/jic1p8fqr2m87kj7?svg=true["Build Status", link="https://ci.appveyor.com/project/jiro4989/clitools"]
-image:https://github.com/actions/hello-world/workflows/Greet%20Everyone/badge.svg["Build Status"]
+image:https://github.com/jiro4989/clitools/workflows/Build%20and%20test%20Nim/badge.svg["Build Status"]
 
 clitools is a commands.
 
