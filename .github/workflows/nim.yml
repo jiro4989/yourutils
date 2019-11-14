@@ -15,6 +15,6 @@ jobs:
       - uses: actions/checkout@v1
       - uses: jiro4989/setup-nim-action@v1.0.1
       - name: Build
-        run: nimble build
+        run: nimble build -Y
       - name: Test
-        run: nimble test
+        run: nimble test -Y
