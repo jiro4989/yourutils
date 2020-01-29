@@ -254,6 +254,20 @@ $ echo '{"a":1, "b":true, "c":[1, 2, 3], "d":{"a":1, "b":"test"}}' | jsonfmt
 }
 ----
 
+=== mcp
+
+Copy multiple files or directories with editor
+
+./docs/mcp.gif[]
+
+=== msel
+
+Select input lines with editor
+
+=== marc
+
+Archive multiple files
+
 == Install
 
 [source,bash]
