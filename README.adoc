@@ -258,7 +258,7 @@ $ echo '{"a":1, "b":true, "c":[1, 2, 3], "d":{"a":1, "b":"test"}}' | jsonfmt
 
 Copy multiple files or directories with editor
 
-./docs/mcp.gif[]
+image:./docs/mcp.gif[]
 
 === msel
 
