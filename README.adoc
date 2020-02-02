@@ -1,12 +1,12 @@
-= clitools
+= yourutils
 :toc: left
 :sectnums:
 
-image:https://travis-ci.org/jiro4989/clitools.svg?branch=master["Build Status", link="https://travis-ci.org/jiro4989/clitools"]
-image:https://ci.appveyor.com/api/projects/status/jic1p8fqr2m87kj7?svg=true["Build Status", link="https://ci.appveyor.com/project/jiro4989/clitools"]
-image:https://github.com/jiro4989/clitools/workflows/Build%20and%20test%20Nim/badge.svg["Build Status"]
+image:https://travis-ci.org/jiro4989/yourutils.svg?branch=master["Build Status", link="https://travis-ci.org/jiro4989/yourutils"]
+image:https://ci.appveyor.com/api/projects/status/jic1p8fqr2m87kj7?svg=true["Build Status", link="https://ci.appveyor.com/project/jiro4989/yourutils"]
+image:https://github.com/jiro4989/yourutils/workflows/Build%20and%20test%20Nim/badge.svg["Build Status"]
 
-clitools is a commands.
+yourutils is a commands.
 
 **Developing now**
 
@@ -197,7 +197,7 @@ Prompt is here.
 
 [source,bash]
 ----
-17:42:12 jiro4989@jiro4989-pc ~/src/github.com/jiro4989/clitools master •
+17:42:12 jiro4989@jiro4989-pc ~/src/github.com/jiro4989/yourutils master •
 (;^q^)? ›
 ----
 
@@ -271,11 +271,11 @@ Archive multiple files
 == Install
 
 [source,bash]
-nimble install https://github.com/jiro4989/clitools
+nimble install https://github.com/jiro4989/yourutils
 
 or
 
-Download binary from https://github.com/jiro4989/clitools/releases[Releases].
+Download binary from https://github.com/jiro4989/yourutils/releases[Releases].
 
 == License
 
