@@ -31,6 +31,10 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      - uses: jiro4989/setup-nim-action@v1.0.2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
       - name: Cache choosenim
         id: cache-choosenim
         uses: actions/cache@v1
