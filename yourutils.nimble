@@ -20,10 +20,10 @@ requires "alignment >= 1.1.0"
 requires "cligen >= 0.9.32"
 requires "uuids >= 0.1.10"
 
-when not defined(windows):
+when not defined windows:
   requires "nicy#head"
 
-import strformat
+import strformat, os
 
 task ci, "Run CI":
   exec "nim -v"
@@ -31,6 +31,17 @@ task ci, "Run CI":
   exec "nimble install -Y"
   exec "nimble test -Y"
   exec "nimble build -d:release -Y"
-  for b in bin:
-    exec &"./bin/{b} -h"
-    # exec &"./bin/{b} -v"
+
+task archive, "Create archived assets":
+  let app = "yourutils"
+  let assets = &"{app}_{buildOS}"
+  let dir = "dist"/assets
+  mkDir dir
+  cpDir "bin", dir/"bin"
+  cpFile "LICENSE", dir/"LICENSE"
+  cpFile "README.adoc", dir/"README.adoc"
+  withDir "dist":
+    when buildOS == "windows":
+      exec &"zip -r {assets}.zip {assets}"
+    else:
+      exec &"tar czf {assets}.tar.gz {assets}"
