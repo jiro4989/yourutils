@@ -1,8 +1,8 @@
 # Package
 
-version       = "2.1.0"
+version       = "3.1.0"
 author        = "jiro4989"
-description   = "clitools is simple cli commands."
+description   = "yourutils is simple cli commands."
 license       = "MIT"
 srcDir        = "src"
 binDir        = "bin"
