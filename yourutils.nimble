@@ -42,6 +42,6 @@ task archive, "Create archived assets":
   cpFile "README.adoc", dir/"README.adoc"
   withDir "dist":
     when buildOS == "windows":
-      exec &"zip -r {assets}.zip {assets}"
+      exec &"7z a {assets}.zip {assets}"
     else:
       exec &"tar czf {assets}.tar.gz {assets}"
