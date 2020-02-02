@@ -273,7 +273,7 @@ Archive multiple files
 Install
 =======
 
-.. code-clobk:: shell
+.. code-block:: shell
 
    nimble install https://github.com/jiro4989/yourutils
 
