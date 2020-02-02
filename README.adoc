@@ -4,7 +4,7 @@
 
 image:https://travis-ci.org/jiro4989/yourutils.svg?branch=master["Build Status", link="https://travis-ci.org/jiro4989/yourutils"]
 image:https://ci.appveyor.com/api/projects/status/jic1p8fqr2m87kj7?svg=true["Build Status", link="https://ci.appveyor.com/project/jiro4989/yourutils"]
-image:https://github.com/jiro4989/yourutils/workflows/Build%20and%20test%20Nim/badge.svg["Build Status"]
+image:https://github.com/jiro4989/yourutils/workflows/test/badge.svg["Build Status"]
 
 yourutils is a commands.
 
