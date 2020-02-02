@@ -1,7 +1,7 @@
 :toc: left
 :sectnums:
 
-= clitools
+= yourutils
 
 自分用のコマンド集。
 
@@ -258,14 +258,14 @@ nimbleを使用して以下のコマンドでインストールする。
 
 [source,bash]
 ----
-git clone https://github.com/jiro4989/clitools
-cd clitools
-nimble install clitools
+git clone https://github.com/jiro4989/yourutils
+cd yourutils
+nimble install yourutils
 ----
 
 または
 
-https://github.com/jiro4989/clitools/releases[Releases]ページよりダウンロードする。
+https://github.com/jiro4989/yourutils/releases[Releases]ページよりダウンロードする。
 
 == License
 
