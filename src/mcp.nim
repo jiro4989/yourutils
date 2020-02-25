@@ -16,6 +16,7 @@ proc copyFileAndDir(srcs, dsts: seq[string]): seq[string] =
 
   for i, src in srcs:
     let dst = dsts[i]
+    if src == dst: continue
     if existsFile(src):
       # copy file to dir/base
       if existsDir(dst):
