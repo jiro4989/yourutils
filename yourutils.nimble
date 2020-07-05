@@ -7,7 +7,7 @@ license       = "MIT"
 srcDir        = "src"
 binDir        = "bin"
 bin           = @["flat", "rep", "align", "ucut",
-                  "codepoint", "tb", "subnet", "aggr",
+                  "codepoint", "tb", "aggr",
                   "renames", "tiff", "jsonfmt", "zshprompt",
                   "mcp", "msel", "marc"]
 
