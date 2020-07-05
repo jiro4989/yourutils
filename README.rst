@@ -71,27 +71,6 @@ Unicode cut.
    $ echo １あ２あ３ | ucut -d あ -f 1,2
    １ ２
 
-codepoint
----------
-
-Prints code point.
-
-.. code-block:: shell
-
-   % echo hello world | codepoint
-   char code_point code_point(hex)
-   h 104 \U68
-   e 101 \U65
-   l 108 \U6C
-   l 108 \U6C
-   o 111 \U6F
-     32 \U20
-   w 119 \U77
-   o 111 \U6F
-   r 114 \U72
-   l 108 \U6C
-   d 100 \U64
-
 align
 -----
 
